@@ -120,7 +120,7 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
-		score:9999990,
+		score:0,
 		maxSpd:3,
 		dfs:false,
 		upgHPPrice:500
