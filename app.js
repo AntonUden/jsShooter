@@ -120,7 +120,7 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
-		score:0,
+		score:999990,
 		maxSpd:3,
 		dfs:false,
 		upgHPPrice:500
@@ -268,14 +268,19 @@ setInterval(function() {
 		if(player.joinKickTimeout < 0) {
 			var id = Math.random() * 100;
 			BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
-			if(player.dfs){
-				setTimeout(function() {
-					var id = Math.random() * 100;
-					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
-				}, 150);
-			}
 		}
 	}
+	setTimeout(function() {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(player.joinKickTimeout < 0) {
+				if(player.dfs) {
+					var id = Math.random() * 100;
+					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
+				}
+			}
+		}
+	}, 150);
 }, 250);
 
 // Spawn blocks
