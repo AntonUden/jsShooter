@@ -120,8 +120,9 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
-		score:0,
+		score:9999990,
 		maxSpd:3,
+		dfs:false,
 		upgHPPrice:500
 	}
 
@@ -137,6 +138,7 @@ var Player = function(id) {
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
+		self.dfs = false;
 		self.upgHPPrice = 500;
 	}
 
@@ -239,6 +241,16 @@ io.sockets.on("connection", function(socket) {
         }
     });
 
+    socket.on('upgFSpeedClicked',function(data){
+        var player = getPlayerByID(socket.id);
+        if(!(player == null)) {
+        	if(player.score >= 2000) {
+        		player.dfs = true;
+        		player.score-=2000;
+        	}
+        }
+    });
+
     socket.on('mouseMove',function(data){
         var player = getPlayerByID(socket.id);
         if(player != null && data.x != null && data.y != null) {
@@ -256,6 +268,12 @@ setInterval(function() {
 		if(player.joinKickTimeout < 0) {
 			var id = Math.random() * 100;
 			BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
+			if(player.dfs){
+				setTimeout(function() {
+					var id = Math.random() * 100;
+					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
+				}, 150);
+			}
 		}
 	}
 }, 250);
@@ -324,7 +342,8 @@ setInterval(function() {
 			var socket = SOCKET_LIST[p];
 			socket.emit("price", {
 				upgHP:player.upgHPPrice,
-				score:player.score
+				score:player.score,
+				dfs:player.dfs
 			});
 		}
 	}

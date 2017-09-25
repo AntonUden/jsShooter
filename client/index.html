@@ -8,6 +8,7 @@
 <center>
 <canvas id="ctx" width="1200" height="600" style="border:1px solid #000000;"></canvas>
 <div id="statusDiv" style="white-space: nowrap;"></div>
+<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs" style="white-space: nowrap;">Double fire speed (2000)</button>
 <button onclick="upgradeHP()" disabled="true" id="upgradehp" style="white-space: nowrap;">Upgrade HP (500)</button>
 </center>
 
@@ -36,6 +37,12 @@
 		}, 100);
 	} 
 
+	function doubleFireSpeed() {
+		setTimeout(function() {
+			socket.emit("upgFSpeedClicked");
+		}, 100);
+	}
+
 	socket.on("price", function(data) {
 		upgHP = data.upgHP;
 		document.getElementById("upgradehp").innerHTML = "Upgrade HP (" + upgHP + ")";
@@ -43,6 +50,18 @@
 			document.getElementById("upgradehp").disabled = false;
 		} else {
 			document.getElementById("upgradehp").disabled = true;
+		}
+
+		if(data.dfs) {
+			document.getElementById("upgradefs").innerHTML.disabled = true;
+			document.getElementById("upgradefs").innerHTML = "Double fire speed";
+		} else {
+			document.getElementById("upgradefs").innerHTML = "Double fire speed (2000)";
+			if(data.score >= 2000) {
+				document.getElementById("upgradefs").disabled = false;
+			} else {
+				document.getElementById("upgradefs").disabled = true;
+			}
 		}
 	});
 
