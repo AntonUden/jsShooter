@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Zeeraa/jsShooter.git"
   },
   "dependencies": {
-    "color": "2.0.0",
+    "colors": "1.1.2",
     "express": "4.15.5",
     "ws": "3.2.0",
     "socket.io": "2.0.3"
