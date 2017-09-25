@@ -10,7 +10,7 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
 
