@@ -52,14 +52,15 @@
 			document.getElementById("upgradehp").disabled = true;
 		}
 
-		if(data.dfs) {
-			document.getElementById("upgradefs").innerHTML.disabled = true;
+		if(data.dfs == true) {
+			document.getElementById("upgradefs").disabled = true;
 			document.getElementById("upgradefs").innerHTML = "Double fire speed";
 		} else {
 			document.getElementById("upgradefs").innerHTML = "Double fire speed (2000)";
 			if(data.score >= 2000) {
 				document.getElementById("upgradefs").disabled = false;
 			} else {
+				console.log("<");
 				document.getElementById("upgradefs").disabled = true;
 			}
 		}

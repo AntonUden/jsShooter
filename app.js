@@ -120,7 +120,7 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
-		score:999990,
+		score:3990,
 		maxSpd:3,
 		dfs:false,
 		upgHPPrice:500
@@ -244,13 +244,14 @@ io.sockets.on("connection", function(socket) {
     socket.on('upgFSpeedClicked',function(data){
         var player = getPlayerByID(socket.id);
         if(!(player == null)) {
-        	if(player.score >= 2000) {
-        		player.dfs = true;
-        		player.score-=2000;
+        	if(!player.dfs) {
+        		if(player.score >= 2000) {
+        			player.dfs = true;
+        			player.score-=2000;
+        		}
         	}
         }
     });
-
     socket.on('mouseMove',function(data){
         var player = getPlayerByID(socket.id);
         if(player != null && data.x != null && data.y != null) {
