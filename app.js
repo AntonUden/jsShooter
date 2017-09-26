@@ -3,7 +3,7 @@ var app = express();
 var serv = require('http').Server(app);
 var colors = require('colors/safe');
 
-console.log(colors.green("starting server..."));
+console.log(colors.green("[jsShooter] Starting server..."));
 
 app.get('/',function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
@@ -14,7 +14,7 @@ var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
 
-console.log(colors.green("Server started on port " + port));
+console.log(colors.green("[jsShooter] Server started on port " + port));
 
 var SOCKET_LIST = {};
 var PLAYER_LIST = {};
@@ -104,8 +104,8 @@ var NPCBlock = function(id) {
 // Player object
 var Player = function(id) {
 	var self = {
-		x:Math.floor(Math.random() * 1200),
-		y:Math.floor(Math.random() * 600),
+		x:Math.floor(Math.random() * 1180) + 10,
+		y:Math.floor(Math.random() * 580) + 10,
 		id:id,
 		joinKickTimeout:10,
 		pressingRight:false,
@@ -192,7 +192,7 @@ io.sockets.on("connection", function(socket) {
 	SOCKET_LIST[socket.id] = socket;
 	var player = Player(socket.id);
 	PLAYER_LIST[socket.id] = player;
-	console.log(colors.cyan("Socket connection with id " + socket.id));
+	console.log(colors.cyan("[jsShooter] Socket connection with id " + socket.id));
 	socket.emit("id", {
 		id:socket.id
 	});
@@ -206,7 +206,7 @@ io.sockets.on("connection", function(socket) {
 		}
 		delete SOCKET_LIST[socket.id];
 		delete PLAYER_LIST[socket.id];
-		console.log(colors.cyan("Player with id " + socket.id + " disconnected"));
+		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
 	});
 
     socket.on('keyPress',function(data){
@@ -224,7 +224,7 @@ io.sockets.on("connection", function(socket) {
         var player = getPlayerByID(socket.id);
         if(!(player == null)) {
         	player.joinKickTimeout = -1;
-        	console.log(colors.cyan("Player with id " + socket.id + " is now verified"));
+        	console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
         }
     });
 
@@ -337,7 +337,7 @@ setInterval(function() {
 		if(player.joinKickTimeout == 0) {
 			delete PLAYER_LIST[player.id];
 			delete SOCKET_LIST[player.id];
-			console.log(colors.red("Kicked " + player.id + " for inactivity"));
+			console.log(colors.red("[jsShooter] Kicked " + player.id + " for inactivity"));
 		}
 	}
 }, 100);
