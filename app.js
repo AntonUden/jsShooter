@@ -123,6 +123,7 @@ var Player = function(id) {
 		score:0,
 		maxSpd:3,
 		dfs:false,
+		dualBullets:false,
 		upgHPPrice:500
 	}
 
@@ -139,6 +140,7 @@ var Player = function(id) {
 		self.regen = -1;
 		self.maxSpd = 3;
 		self.dfs = false;
+		self.dualBullets = false;
 		self.upgHPPrice = 500;
 	}
 
@@ -252,6 +254,19 @@ io.sockets.on("connection", function(socket) {
         	}
         }
     });
+
+    socket.on('upgDualBullets', function() {
+    	var player = getPlayerByID(socket.id);
+        if(!(player == null)) {
+        	if(!player.dualBullets) {
+        		if(player.score >= 5000) {
+        			player.dualBullets = true;
+        			player.score-=5000;
+        		}
+        	}
+        }
+    });
+
     socket.on('mouseMove',function(data){
         var player = getPlayerByID(socket.id);
         if(player != null && data.x != null && data.y != null) {
@@ -267,8 +282,12 @@ setInterval(function() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
 		if(player.joinKickTimeout < 0) {
-			var id = Math.random() * 100;
+			var id = Math.random() * 200;
 			BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
+			if(player.dualBullets) {
+				id = Math.random() * 200;
+				BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
+			}
 		}
 	}
 	setTimeout(function() {
@@ -276,8 +295,12 @@ setInterval(function() {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0) {
 				if(player.dfs) {
-					var id = Math.random() * 100;
+					var id = Math.random() * 200;
 					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
+					if(player.dualBullets) {
+						id = Math.random() * 200;
+						BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
+					}
 				}
 			}
 		}
@@ -349,7 +372,8 @@ setInterval(function() {
 			socket.emit("price", {
 				upgHP:player.upgHPPrice,
 				score:player.score,
-				dfs:player.dfs
+				dfs:player.dfs,
+				dualBullets:player.dualBullets
 			});
 		}
 	}
@@ -383,8 +407,6 @@ setInterval(function() {
 		var socket = SOCKET_LIST[i];
 		socket.emit("newPositions", pack);
 	}
-
-
 },(1000 / 25));
 
 //Spawn 5 block at start

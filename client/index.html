@@ -9,6 +9,7 @@
 <canvas id="ctx" width="1200" height="600" style="border:1px solid #000000;"></canvas>
 <div id="statusDiv" style="white-space: nowrap;"></div>
 <button onclick="doubleFireSpeed()" disabled="true" id="upgradefs" style="white-space: nowrap;">Double fire speed (2000)</button>
+<button onclick="dualBullets()" disabled="true" id="upgradedb" style="white-space: nowrap;">Dual bullets (5000)</button>
 <button onclick="upgradeHP()" disabled="true" id="upgradehp" style="white-space: nowrap;">Upgrade HP (500)</button>
 </center>
 
@@ -37,6 +38,12 @@
 		}, 100);
 	} 
 
+	function dualBullets() {
+		setTimeout(function() {
+			socket.emit("upgDualBullets");
+		}, 100);
+	}
+
 	function doubleFireSpeed() {
 		setTimeout(function() {
 			socket.emit("upgFSpeedClicked");
@@ -60,8 +67,19 @@
 			if(data.score >= 2000) {
 				document.getElementById("upgradefs").disabled = false;
 			} else {
-				console.log("<");
 				document.getElementById("upgradefs").disabled = true;
+			}
+		}
+
+		if(data.dualBullets == true) {
+			document.getElementById("upgradedb").disabled = true;
+			document.getElementById("upgradedb").innerHTML = "Dual bullets";
+		} else {
+			document.getElementById("upgradedb").innerHTML = "Dual bullets (5000)";
+			if(data.score >= 2000) {
+				document.getElementById("upgradedb").disabled = false;
+			} else {
+				document.getElementById("upgradedb").disabled = true;
 			}
 		}
 	});
