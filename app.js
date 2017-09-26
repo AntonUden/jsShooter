@@ -88,7 +88,6 @@ var Bullet = function(id, ownerID, x, y, angle) {
 			delete self;
 		}
 	}
-
 	return self;
 }
 
@@ -99,7 +98,6 @@ var NPCBlock = function(id) {
 		x:Math.floor(Math.random() * 1180) + 10,
 		y:Math.floor(Math.random() * 580) + 10
 	}
-
 	return self;
 }
 
@@ -171,7 +169,6 @@ var Player = function(id) {
 			}
 		}
 	}
-
 	return self;
 }
 
@@ -193,13 +190,13 @@ function spawnBlock() {
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
-	
 	var player = Player(socket.id);
 	PLAYER_LIST[socket.id] = player;
 	console.log(colors.cyan("Socket connection with id " + socket.id));
 	socket.emit("id", {
 		id:socket.id
 	});
+	
 	socket.on("disconnect", function() {
 		for(var b in BULLET_LIST) {
 			var bullet = BULLET_LIST[b];
@@ -211,6 +208,7 @@ io.sockets.on("connection", function(socket) {
 		delete PLAYER_LIST[socket.id];
 		console.log(colors.cyan("Player with id " + socket.id + " disconnected"));
 	});
+
     socket.on('keyPress',function(data){
         if(data.inputId === 'left')
             player.pressingLeft = data.state;
@@ -229,6 +227,7 @@ io.sockets.on("connection", function(socket) {
         	console.log(colors.cyan("Player with id " + socket.id + " is now verified"));
         }
     });
+
     socket.on('upgHPClicked',function(data){
         var player = getPlayerByID(socket.id);
         if(!(player == null)) {
@@ -290,6 +289,7 @@ setInterval(function() {
 			}
 		}
 	}
+
 	setTimeout(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
@@ -309,12 +309,7 @@ setInterval(function() {
 
 // Spawn blocks
 setInterval(function() {
-	var size = 0;
-	for(var i in BLOCK_LIST) {
-		size++;
-	}
-
-	if(size < 10) {
+	if(Object.keys(BLOCK_LIST).length < 20) {
 		spawnBlock();
 	}
 }, 2500);
@@ -336,7 +331,6 @@ setInterval(function() {
 				player.hp++;
 			}
 		}
-
 		if(player.joinKickTimeout > 0) {
 			player.joinKickTimeout--;
 		}
@@ -403,6 +397,7 @@ setInterval(function() {
 		bullets:bulletPack,
 		blocks:blockPack
 	});
+
 	for(var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
 		socket.emit("newPositions", pack);
