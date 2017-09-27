@@ -21,7 +21,7 @@
 <button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
 <button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
 <button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
-<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required>
+<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
 <button id="setName" onclick="changeName()">Set name</button>
 </div>
 </center>
@@ -45,6 +45,12 @@
 		}, 100);
 	});
 
+	function nameInputKeydown(event) {
+		if (event.keyCode == 13) {
+			document.getElementById('setName').click();
+		}
+	}
+
 	function upgradeHP() {
 		setTimeout(function() {
 			socket.emit("upgHPClicked");
@@ -53,8 +59,12 @@
 
 	function changeName() {
 		var name = "" + document.getElementById("nameInput").value;
+		if(name == "") {
+			name = "Unnamed";
+		}
 		console.log("changing name to " + name);
 		socket.emit("changeName", {name:name});
+		document.getElementById("nameInput").value = name;
 	}
 
 	function dualBullets() {
