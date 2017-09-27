@@ -45,7 +45,7 @@ var Bullet = function(id, ownerID, x, y, angle) {
 						if(!(self.owner == player.id)) {
 							player.hp--;
 							var owner = getPlayerByID(self.owner);
-							if(!(owner == null)) {
+							if(!(owner == undefined)) {
 								owner.score += 10;
 								if(player.hp <= 0) {
 									owner.score += 100;
@@ -68,7 +68,7 @@ var Bullet = function(id, ownerID, x, y, angle) {
 				if (self.y >= block.y - 6 && self.y <= block.y + 6) {
 					delete BLOCK_LIST[block.id];
 					var owner = getPlayerByID(self.owner);
-					if(!(owner == null)) {
+					if(!(owner == undefined)) {
 						owner.score += 25;
 					}
 					self.lifetime = 0;
@@ -210,19 +210,22 @@ io.sockets.on("connection", function(socket) {
 	});
 
     socket.on('keyPress',function(data){
-        if(data.inputId === 'left')
-            player.pressingLeft = data.state;
-        else if(data.inputId === 'right')
-            player.pressingRight = data.state;
-        else if(data.inputId === 'up')
-            player.pressingUp = data.state;
-        else if(data.inputId === 'down')
-            player.pressingDown = data.state;
+        try {
+        	if(data.inputId === 'left')
+	            player.pressingLeft = data.state;
+	        else if(data.inputId === 'right')
+	            player.pressingRight = data.state;
+	        else if(data.inputId === 'up')
+	            player.pressingUp = data.state;
+	        else if(data.inputId === 'down')
+	            player.pressingDown = data.state;
+        } catch(err) {
+        }
     });
 
     socket.on('kthx',function(data){
         var player = getPlayerByID(socket.id);
-        if(!(player == null)) {
+        if(!(player == undefined)) {
         	player.joinKickTimeout = -1;
         	console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
         }
@@ -230,7 +233,7 @@ io.sockets.on("connection", function(socket) {
 
     socket.on('upgHPClicked',function(data){
         var player = getPlayerByID(socket.id);
-        if(!(player == null)) {
+        if(!(player == undefined)) {
         	if(player.score >= player.upgHPPrice) {
         		player.maxHp++;
         		player.score-=player.upgHPPrice;
@@ -244,7 +247,7 @@ io.sockets.on("connection", function(socket) {
 
     socket.on('upgFSpeedClicked',function(data){
         var player = getPlayerByID(socket.id);
-        if(!(player == null)) {
+        if(!(player == undefined)) {
         	if(!player.dfs) {
         		if(player.score >= 2000) {
         			player.dfs = true;
@@ -256,7 +259,7 @@ io.sockets.on("connection", function(socket) {
 
     socket.on('upgDualBullets', function() {
     	var player = getPlayerByID(socket.id);
-        if(!(player == null)) {
+        if(!(player == undefined)) {
         	if(!player.dualBullets) {
         		if(player.score >= 5000) {
         			player.dualBullets = true;
@@ -267,10 +270,13 @@ io.sockets.on("connection", function(socket) {
     });
 
     socket.on('mouseMove',function(data){
-        var player = getPlayerByID(socket.id);
-        if(player != null && data.x != null && data.y != null) {
-        	player.mx = data.x;
-        	player.my = data.y;
+	    try {
+	        var player = getPlayerByID(socket.id);
+	        if(player != undefined && data.x != undefined && data.y != undefined) {
+	        	player.mx = data.x;
+	        	player.my = data.y;
+	        }
+	    } catch(err) {
         }
     });
 
@@ -344,63 +350,67 @@ setInterval(function() {
 
 // Main update loop
 setInterval(function() {
-	var pack = [];
-	var playerPack = [];
-	var bulletPack = [];
-	var blockPack = [];
-	for(var p in PLAYER_LIST) {
-		var player = PLAYER_LIST[p];
-		player.update();
+	try {
+		var pack = [];
+		var playerPack = [];
+		var bulletPack = [];
+		var blockPack = [];
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			player.update();
 
-		if(player.joinKickTimeout < 0) {
-			playerPack.push({
-				type:1,
-				x:player.x,
-				y:player.y,
-				hp:player.hp,
-				maxHp:player.maxHp,
-				score:player.score,
-				id:player.id
-			});
-			var socket = SOCKET_LIST[p];
-			socket.emit("price", {
-				upgHP:player.upgHPPrice,
-				score:player.score,
-				dfs:player.dfs,
-				dualBullets:player.dualBullets
+			if(player.joinKickTimeout < 0) {
+				playerPack.push({
+					type:1,
+					x:player.x,
+					y:player.y,
+					hp:player.hp,
+					maxHp:player.maxHp,
+					score:player.score,
+					id:player.id
+				});
+				var socket = SOCKET_LIST[p];
+				socket.emit("price", {
+					upgHP:player.upgHPPrice,
+					score:player.score,
+					dfs:player.dfs,
+					dualBullets:player.dualBullets
+				});
+			}
+		}
+
+		for(var b in BULLET_LIST) {
+			var bullet = BULLET_LIST[b];
+			bullet.update();
+			bulletPack.push({
+				type:2,
+				x:bullet.x,
+				y:bullet.y,
+				id:bullet.id,
+				ownerID:bullet.owner
 			});
 		}
-	}
 
-	for(var b in BULLET_LIST) {
-		var bullet = BULLET_LIST[b];
-		bullet.update();
-		bulletPack.push({
-			type:2,
-			x:bullet.x,
-			y:bullet.y,
-			id:bullet.id,
-			ownerID:bullet.owner
+		for(var bl in BLOCK_LIST) {
+			var block = BLOCK_LIST[bl];
+			blockPack.push({
+				x:block.x,
+				y:block.y
+			});
+		}
+
+		pack.push({
+			players:playerPack,
+			bullets:bulletPack,
+			blocks:blockPack
 		});
-	}
 
-	for(var bl in BLOCK_LIST) {
-		var block = BLOCK_LIST[bl];
-		blockPack.push({
-			x:block.x,
-			y:block.y
-		});
-	}
-
-	pack.push({
-		players:playerPack,
-		bullets:bulletPack,
-		blocks:blockPack
-	});
-
-	for(var i in SOCKET_LIST) {
-		var socket = SOCKET_LIST[i];
-		socket.emit("newPositions", pack);
+		for(var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.emit("newPositions", pack);
+		}
+	}catch(err) {
+		console.log("[jsShooter] (Warning) Crash during main update loop");
 	}
 },(1000 / 25));
 
