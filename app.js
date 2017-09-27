@@ -120,6 +120,7 @@ var Player = function(id) {
 		my:0,
 		score:0,
 		maxSpd:3,
+		name:"Unnamed",
 		dfs:false,
 		dualBullets:false,
 		upgHPPrice:500
@@ -221,6 +222,15 @@ io.sockets.on("connection", function(socket) {
 	            player.pressingDown = data.state;
         } catch(err) {
         }
+    });
+
+    socket.on('changeName', function(data) {
+    	try {
+    		var player = getPlayerByID(socket.id);
+    		player.name = data.name;
+    	} catch(err) {
+    		
+    	}
     });
 
     socket.on('kthx',function(data){
@@ -364,6 +374,7 @@ setInterval(function() {
 					type:1,
 					x:player.x,
 					y:player.y,
+					name:player.name,
 					hp:player.hp,
 					maxHp:player.maxHp,
 					score:player.score,

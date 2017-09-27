@@ -94,6 +94,7 @@
 
 	socket.on("newPositions", function(data) {
 		ctx.clearRect(0,0,1200,600);
+		ctx.textAlign="center";  
 		for(var i = 0; i < data[0].players.length; i++) {
 			if(data[0].players[i].id == id) {
 				var status = "HP: " + data[0].players[i].hp + "/" + data[0].players[i].maxHp + " Score: " + data[0].players[i].score;
@@ -102,6 +103,8 @@
 				ctx.fillStyle="#FF0000";
 			}
 			ctx.fillRect(data[0].players[i].x - 7, data[0].players[i].y - 7, 14, 14);
+			ctx.fillStyle = "#000000";
+			ctx.fillText(data[0].players[i].name, data[0].players[i].x, data[0].players[i].y - 16);
 		}
 
 		for(var i = 0; i < data[0].bullets.length; i++) {
