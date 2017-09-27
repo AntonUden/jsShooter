@@ -3,16 +3,27 @@
 <head>
 <meta name="theme-color" content="#309090" />
 <title>JS Shooter</title>
+<style type="text/css">
+	button {
+		white-space: nowrap;
+	}
+
+	#ctx {
+		border:1px solid #000000;
+	}
+</style>
 </head>
 <body>
 <center>
-<canvas id="ctx" width="1200" height="600" style="border:1px solid #000000;"></canvas>
+<canvas id="ctx" width="1200" height="600"></canvas>
+<div id="uiDiv">
 <div id="statusDiv" style="white-space: nowrap;"></div>
-<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs" style="white-space: nowrap;">Double fire speed (2000)</button>
-<button onclick="dualBullets()" disabled="true" id="upgradedb" style="white-space: nowrap;">Dual bullets (5000)</button>
-<button onclick="upgradeHP()" disabled="true" id="upgradehp" style="white-space: nowrap;">Upgrade HP (500)</button><br>
+<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
 <input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required>
 <button id="setName" onclick="changeName()">Set name</button>
+</div>
 </center>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
