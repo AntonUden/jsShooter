@@ -10,7 +10,9 @@
 <div id="statusDiv" style="white-space: nowrap;"></div>
 <button onclick="doubleFireSpeed()" disabled="true" id="upgradefs" style="white-space: nowrap;">Double fire speed (2000)</button>
 <button onclick="dualBullets()" disabled="true" id="upgradedb" style="white-space: nowrap;">Dual bullets (5000)</button>
-<button onclick="upgradeHP()" disabled="true" id="upgradehp" style="white-space: nowrap;">Upgrade HP (500)</button>
+<button onclick="upgradeHP()" disabled="true" id="upgradehp" style="white-space: nowrap;">Upgrade HP (500)</button><br>
+<textarea id="nameInput" maxlength="16">Unnamed</textarea>
+<button id="setName" onclick="changeName()">Set name</button>
 </center>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -37,6 +39,11 @@
 			socket.emit("upgHPClicked");
 		}, 100);
 	} 
+
+	function changeName() {
+		var name = "" + document.getElementById("nameInput").value;
+		socket.emit("changeName", {name:name});
+	}
 
 	function dualBullets() {
 		setTimeout(function() {
