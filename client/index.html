@@ -8,8 +8,21 @@
 		white-space: nowrap;
 	}
 
+	html { 
+		background: url("/client/background.jpg") no-repeat center center fixed; 
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+}
+
 	#ctx {
 		border:1px solid #000000;
+	}
+
+	#uiDiv {
+		background-color: rgba(255,255,255,0.6);
+
 	}
 </style>
 </head>
@@ -115,6 +128,8 @@
 
 	socket.on("newPositions", function(data) {
 		ctx.clearRect(0,0,1200,600);
+		ctx.fillStyle="#FFFFFF";
+		ctx.fillRect(0,0,1200,600);
 		ctx.textAlign="center";  
 		for(var i = 0; i < data[0].players.length; i++) {
 			if(data[0].players[i].id == id) {
