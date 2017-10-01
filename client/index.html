@@ -14,7 +14,7 @@
 		-moz-background-size: cover;
 		-o-background-size: cover;
 		background-size: cover;
-}
+	}
 
 	#ctx {
 		border:1px solid #000000;
@@ -162,6 +162,16 @@
 			ctx.fillRect(data[0].blocks[i].x - 5, data[0].blocks[i].y - 5, 10, 10);
 			ctx.fillStyle="#00FF00";
 			ctx.fillRect(data[0].blocks[i].x - 3, data[0].blocks[i].y - 3, 6, 6);
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		for(var i = 0; i < data[0].attackers.length; i++) {
+			ctx.beginPath();
+			ctx.fillStyle="#0000FF";
+			ctx.fillRect(data[0].attackers[i].x - 5, data[0].attackers[i].y - 5, 10, 10);
+			ctx.fillStyle="#FF0000";
+			ctx.fillRect(data[0].attackers[i].x - 3, data[0].attackers[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
 		}
