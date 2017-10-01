@@ -170,7 +170,7 @@
 			ctx.beginPath();
 			ctx.fillStyle="#0000FF";
 			ctx.fillRect(data[0].attackers[i].x - 5, data[0].attackers[i].y - 5, 10, 10);
-			ctx.fillStyle="#FF0000";
+			ctx.fillStyle= ("rgba(" + (255 - (data[0].attackers[i].activationTimer * 3)) + ", 0, 0, 1)");
 			ctx.fillRect(data[0].attackers[i].x - 3, data[0].attackers[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();

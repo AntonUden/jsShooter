@@ -47,37 +47,42 @@ var NPCAttacker = function(id, x, y) {
 		x:x,
 		y:y,
 		targetPlayer:-1,
-		hp:10
+		hp:10,
+		activationTimer:100
 	}
 
 	self.update = function() {
-		try {
-			var dist = {};
-			for(var p in PLAYER_LIST) {
-				var player = PLAYER_LIST[p];
-				var d = getDistance(self.x, self.y, player.x, player.y);
-				dist[player.id] = d;
-			}
-			var target = getSmallest(dist);
-			if(!(target == undefined)) {
-				self.targetPlayer = target;
-			} else {
-				self.targetPlayer = -1;
-			}
+		if(self.activationTimer > 0) {
+			self.activationTimer--;
+		} else {
+			try {
+				var dist = {};
+				for(var p in PLAYER_LIST) {
+					var player = PLAYER_LIST[p];
+					var d = getDistance(self.x, self.y, player.x, player.y);
+					dist[player.id] = d;
+				}
+				var target = getSmallest(dist);
+				if(!(target == undefined)) {
+					self.targetPlayer = target;
+				} else {
+					self.targetPlayer = -1;
+				}
 
-			if(!(self.targetPlayer == -1)) {
-				if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
-					var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
-					self.x += Math.cos(dir/180*Math.PI) * 2;
-	    			self.y += Math.sin(dir/180*Math.PI) * 2;
-	    		}
-			} else {
-			}
-			if(self.hp <= 0) {
-				delete ATTACKER_LIST[self.id];
-			}
-		} catch(err) {
+				if(!(self.targetPlayer == -1)) {
+					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
+						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
+						self.x += Math.cos(dir/180*Math.PI) * 2;
+		    			self.y += Math.sin(dir/180*Math.PI) * 2;
+		    		}
+				} else {
+				}
+				if(self.hp <= 0) {
+					delete ATTACKER_LIST[self.id];
+				}
+			} catch(err) {
 
+			}
 		}
 	}
 
@@ -431,7 +436,7 @@ setInterval(function() {
 
 // Spawn attackers
 setInterval(function() {
-	if(Object.keys(ATTACKER_LIST).length < 5) {
+	if(Object.keys(ATTACKER_LIST).length < 3) {
 		spawnAttacker();
 	}
 }, 10000);
@@ -440,13 +445,15 @@ setInterval(function() {
 setInterval(function() {
 	for(var na in ATTACKER_LIST) {
 		var a = ATTACKER_LIST[na];
-		for(var p in PLAYER_LIST) {
-			var player = PLAYER_LIST[p];
+		if(!a.activationTimer > 0) {
+			for(var p in PLAYER_LIST) {
+				var player = PLAYER_LIST[p];
 
-			if(getDistance(a.x, a.y, player.x, player.y) < 10) {
-				player.hp --;
-				if(player.hp <= 0) {
-					a.hp = 10;
+				if(getDistance(a.x, a.y, player.x, player.y) < 10) {
+					player.hp --;
+					if(player.hp <= 0) {
+						a.hp = 10;
+					}
 				}
 			}
 		}
@@ -539,7 +546,8 @@ setInterval(function() {
 			attacker.update();
 			attackerPack.push({
 				x:attacker.x,
-				y:attacker.y
+				y:attacker.y,
+				activationTimer:attacker.activationTimer
 			});
 		}
 
@@ -555,7 +563,7 @@ setInterval(function() {
 			socket.emit("newPositions", pack);
 		}
 	} catch(err) {
-		console.log("[jsShooter] (Warning) Crash during main update loop");
+		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
 	}
 },(1000 / 25));
 
