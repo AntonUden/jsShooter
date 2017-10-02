@@ -145,10 +145,10 @@
 
 		for(var i = 0; i < data[0].bullets.length; i++) {
 			if(data[0].bullets[i].ownerID == id) {
-				ctx.fillStyle="#008800";
+				ctx.fillStyle="#004000";
 				document.getElementById("statusDiv").innerHTML = status;
 			} else {
-				ctx.fillStyle="#880000";
+				ctx.fillStyle="#400000";
 			}
 			ctx.beginPath();
 			ctx.arc(data[0].bullets[i].x - 2,data[0].bullets[i].y - 2, 2, 0, Math.PI*2, true); 
