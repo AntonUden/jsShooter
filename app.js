@@ -22,25 +22,7 @@ var BULLET_LIST = {};
 var BLOCK_LIST = {};
 var ATTACKER_LIST = {};
 
-function getSmallest(obj) {
-    var min,key;
-    for(var k in obj)
-    {
-        if(typeof(min)=='undefined')
-        {
-            min=obj[k];
-            key=k;
-            continue;
-        }
-        if(obj[k]<min)
-        {
-            min=obj[k]; 
-            key=k;
-        }
-    }
-    return key;
-}
-
+// NPC attacker object
 var NPCAttacker = function(id, x, y) {
 	var self = {
 		id:id,
@@ -73,8 +55,8 @@ var NPCAttacker = function(id, x, y) {
 					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
 						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
 						self.x += Math.cos(dir/180*Math.PI) * 2;
-		    			self.y += Math.sin(dir/180*Math.PI) * 2;
-		    		}
+						self.y += Math.sin(dir/180*Math.PI) * 2;
+					}
 				} else {
 				}
 				if(self.hp <= 0) {
@@ -97,7 +79,7 @@ var Bullet = function(id, ownerID, x, y, angle) {
 		x:x,
 		y:y,
 		xvel:Math.cos(angle/180*Math.PI) * 10,
-    	yvel:Math.sin(angle/180*Math.PI) * 10,
+		yvel:Math.sin(angle/180*Math.PI) * 10,
 		owner:ownerID
 	}
 
@@ -275,6 +257,25 @@ function getDistance(x1, y1, x2, y2) {
 	return c;
 }
 
+function getSmallest(obj) {
+	var min,key;
+	for(var k in obj)
+	{
+		if(typeof(min)=='undefined')
+		{
+			min=obj[k];
+			key=k;
+			continue;
+		}
+		if(obj[k]<min)
+		{
+			min=obj[k]; 
+			key=k;
+		}
+	}
+	return key;
+}
+
 function spawnBlock() {
 	var id = (Math.random() * 10);
 	BLOCK_LIST[id] = NPCBlock(id);
@@ -285,7 +286,7 @@ function spawnAttacker() {
 	var id = (Math.random() * 10);
 	var x = Math.floor(Math.random() * 1180) + 10;
 	var y = Math.floor(Math.random() * 580) + 10;
-	ATTACKER_LIST[id] = NPCAttacker(id, 500, 300);
+	ATTACKER_LIST[id] = NPCAttacker(id, x, y);
 	return id;
 }
 
@@ -311,88 +312,88 @@ io.sockets.on("connection", function(socket) {
 		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
 	});
 
-    socket.on('keyPress',function(data){
-        try {
-        	if(data.inputId === 'left')
-	            player.pressingLeft = data.state;
-	        else if(data.inputId === 'right')
-	            player.pressingRight = data.state;
-	        else if(data.inputId === 'up')
-	            player.pressingUp = data.state;
-	        else if(data.inputId === 'down')
-	            player.pressingDown = data.state;
-        } catch(err) {
-        }
-    });
+	socket.on('keyPress',function(data){
+		try {
+			if(data.inputId === 'left')
+				player.pressingLeft = data.state;
+			else if(data.inputId === 'right')
+				player.pressingRight = data.state;
+			else if(data.inputId === 'up')
+				player.pressingUp = data.state;
+			else if(data.inputId === 'down')
+				player.pressingDown = data.state;
+		} catch(err) {
+		}
+	});
 
-    socket.on('changeName', function(data) {
-    	try {
-    		var player = getPlayerByID(socket.id);
-    		player.name = data.name;
-    	} catch(err) {
-    		
-    	}
-    });
+	socket.on('changeName', function(data) {
+		try {
+			var player = getPlayerByID(socket.id);
+			player.name = data.name;
+		} catch(err) {
+			
+		}
+	});
 
-    socket.on('kthx',function(data){
-        var player = getPlayerByID(socket.id);
-        if(!(player == undefined)) {
-        	player.joinKickTimeout = -1;
-        	console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
-        }
-    });
+	socket.on('kthx',function(data){
+		var player = getPlayerByID(socket.id);
+		if(!(player == undefined)) {
+			player.joinKickTimeout = -1;
+			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
+		}
+	});
 
-    // HP Upgrade
-    socket.on('upgHPClicked',function(data){
-        var player = getPlayerByID(socket.id);
-        if(!(player == undefined)) {
-        	if(player.score >= player.upgHPPrice) {
-        		player.maxHp++;
-        		player.score-=player.upgHPPrice;
-        		player.upgHPPrice+=250;
-        		if(player.hp < player.maxHp) {
-        			player.hp++;
-        		}
-        	}
-        }
-    });
+	// HP Upgrade
+	socket.on('upgHPClicked',function(data){
+		var player = getPlayerByID(socket.id);
+		if(!(player == undefined)) {
+			if(player.score >= player.upgHPPrice) {
+				player.maxHp++;
+				player.score-=player.upgHPPrice;
+				player.upgHPPrice+=250;
+				if(player.hp < player.maxHp) {
+					player.hp++;
+				}
+			}
+		}
+	});
 
-    // Fire speed upgrade
-    socket.on('upgFSpeedClicked',function(data){
-        var player = getPlayerByID(socket.id);
-        if(!(player == undefined)) {
-        	if(!player.dfs) {
-        		if(player.score >= 2000) {
-        			player.dfs = true;
-        			player.score-=2000;
-        		}
-        	}
-        }
-    });
+	// Fire speed upgrade
+	socket.on('upgFSpeedClicked',function(data){
+		var player = getPlayerByID(socket.id);
+		if(!(player == undefined)) {
+			if(!player.dfs) {
+				if(player.score >= 2000) {
+					player.dfs = true;
+					player.score-=2000;
+				}
+			}
+		}
+	});
 
-    // Dual bullet upgrade
-    socket.on('upgDualBullets', function() {
-    	var player = getPlayerByID(socket.id);
-        if(!(player == undefined)) {
-        	if(!player.dualBullets) {
-        		if(player.score >= 5000) {
-        			player.dualBullets = true;
-        			player.score-=5000;
-        		}
-        	}
-        }
-    });
+	// Dual bullet upgrade
+	socket.on('upgDualBullets', function() {
+		var player = getPlayerByID(socket.id);
+		if(!(player == undefined)) {
+			if(!player.dualBullets) {
+				if(player.score >= 5000) {
+					player.dualBullets = true;
+					player.score-=5000;
+				}
+			}
+		}
+	});
 
-    socket.on('mouseMove',function(data){
-	    try {
-	        var player = getPlayerByID(socket.id);
-	        if(player != undefined && data.x != undefined && data.y != undefined) {
-	        	player.mx = data.x;
-	        	player.my = data.y;
-	        }
-	    } catch(err) {
-        }
-    });
+	socket.on('mouseMove',function(data){
+		try {
+			var player = getPlayerByID(socket.id);
+			if(player != undefined && data.x != undefined && data.y != undefined) {
+				player.mx = data.x;
+				player.my = data.y;
+			}
+		} catch(err) {
+		}
+	});
 
 });
 
