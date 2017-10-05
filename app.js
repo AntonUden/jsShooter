@@ -21,9 +21,10 @@ var PLAYER_LIST = {};
 var BULLET_LIST = {};
 var BLOCK_LIST = {};
 var ATTACKER_LIST = {};
+var NPCSHOOTER_LIST = {};
 
-// NPC attacker object
-var NPCAttacker = function(id, x, y) {
+// Npc shooter object
+var NPCShooter = function(id, x, y) {
 	var self = {
 		id:id,
 		x:x,
@@ -52,12 +53,48 @@ var NPCAttacker = function(id, x, y) {
 				}
 
 				if(!(self.targetPlayer == -1)) {
-					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
-						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
-						self.x += Math.cos(dir/180*Math.PI) * 2;
-						self.y += Math.sin(dir/180*Math.PI) * 2;
-					}
+					
 				} else {
+				}
+				if(self.hp <= 0) {
+					delete ATTACKER_LIST[self.id];
+				}
+			} catch(err) {
+
+			}
+		}
+	}
+
+	return self;
+}
+
+// NPC attacker object
+var NPCAttacker = function(id, x, y) {
+	var self = {
+		id:id,
+		x:x,
+		y:y,
+		targetPlayer:-1,
+		hp:10,
+		activationTimer:100
+	}
+
+	self.update = function() {
+		if(self.activationTimer > 0) {
+			self.activationTimer--;
+		} else {
+			try {
+				var dist = {};
+				for(var p in PLAYER_LIST) {
+					var player = PLAYER_LIST[p];
+					var d = getDistance(self.x, self.y, player.x, player.y);
+					dist[player.id] = d;
+				}
+				var target = getSmallest(dist);
+				if(!(target == undefined)) {
+					self.targetPlayer = target;
+				} else {
+					self.targetPlayer = -1;
 				}
 				if(self.hp <= 0) {
 					delete ATTACKER_LIST[self.id];
@@ -135,6 +172,23 @@ var Bullet = function(id, ownerID, x, y, angle) {
 					if(!(owner == undefined)) {
 						owner.score += 10;
 						if(at.hp <= 0) {
+							owner.score += 50;
+						} 
+					}
+					self.lifetime = 0;
+				}
+			}
+		}
+
+		for(var s in NPCSHOOTER_LIST) {
+			var sh = NPCSHOOTER_LIST[s];
+			if (self.x >= sh.x - 7 && self.x <= sh.x + 7) {
+				if (self.y >= sh.y - 7 && self.y <= sh.y + 7) {
+					sh.hp--;
+					var owner = getPlayerByID(self.owner);
+					if(!(owner == undefined)) {
+						owner.score += 10;
+						if(sh.hp <= 0) {
 							owner.score += 50;
 						} 
 					}
@@ -290,6 +344,14 @@ function spawnAttacker() {
 	return id;
 }
 
+function spawnShooter() {
+	var id = (Math.random() * 10);
+	var x = Math.floor(Math.random() * 1180) + 10;
+	var y = Math.floor(Math.random() * 580) + 10;
+	NPCSHOOTER_LIST[id] = NPCShooter(id, x, y);
+	return id;
+}
+
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = socket;
@@ -411,6 +473,19 @@ setInterval(function() {
 		}
 	}
 
+	try {
+		for(var s in NPCSHOOTER_LIST) {
+			var sh = NPCSHOOTER_LIST[s];
+			if(sh.targetPlayer > 0) {
+				var id = Math.random() * 200;
+				var target = PLAYER_LIST[sh.targetPlayer];
+				BULLET_LIST[id] = Bullet(id, -1, sh.x, sh.y, Math.atan2(target.y - sh.y, target.x - sh.x) * 180 / Math.PI);
+			}
+		}
+	} catch(er) {
+		console.log(er);
+	}
+
 	setTimeout(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
@@ -441,6 +516,13 @@ setInterval(function() {
 		spawnAttacker();
 	}
 }, 10000);
+
+// Spawn shooters
+setInterval(function() {
+	if(Object.keys(NPCSHOOTER_LIST).length < 1) {
+		spawnShooter();
+	}
+}, 12000);
 
 // NPCAttacket attack loop
 setInterval(function() {
@@ -496,6 +578,7 @@ setInterval(function() {
 		var playerPack = [];
 		var bulletPack = [];
 		var blockPack = [];
+		var shooterPack = [];
 		var attackerPack = [];
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
@@ -549,6 +632,16 @@ setInterval(function() {
 				x:attacker.x,
 				y:attacker.y,
 				activationTimer:attacker.activationTimer
+			});
+		}
+
+		for(var s in NPCSHOOTER_LIST) {
+			var sh = NPCSHOOTER_LIST[s];
+			sh.update();
+			shooterPack.push({
+				x:sh.x,
+				y:sh.y,
+				activationTimer:sh.activationTimer
 			});
 		}
 
