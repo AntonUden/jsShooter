@@ -56,12 +56,12 @@ var NPCShooter = function(id, x, y) {
 					
 				} else {
 				}
-				if(self.hp <= 0) {
-					delete ATTACKER_LIST[self.id];
-				}
 			} catch(err) {
 
 			}
+		}
+		if(self.hp <= 0) {
+			delete NPCSHOOTER_LIST[self.id];
 		}
 	}
 
@@ -96,12 +96,12 @@ var NPCAttacker = function(id, x, y) {
 				} else {
 					self.targetPlayer = -1;
 				}
-				if(self.hp <= 0) {
-					delete ATTACKER_LIST[self.id];
-				}
 			} catch(err) {
 
 			}
+		}
+		if(self.hp <= 0) {
+			delete ATTACKER_LIST[self.id];
 		}
 	}
 
@@ -185,11 +185,13 @@ var Bullet = function(id, ownerID, x, y, angle) {
 			if (self.x >= sh.x - 7 && self.x <= sh.x + 7) {
 				if (self.y >= sh.y - 7 && self.y <= sh.y + 7) {
 					sh.hp--;
-					var owner = getPlayerByID(self.owner);
-					if(!(owner == undefined)) {
-						owner.score += 10;
-						if(sh.hp <= 0) {
-							owner.score += 50;
+					if(!self.owner == -1) {
+						var owner = getPlayerByID(self.owner);
+						if(!(owner == undefined)) {
+							owner.score += 10;
+							if(sh.hp <= 0) {
+								owner.score += 50;
+							}
 						} 
 					}
 					self.lifetime = 0;
@@ -472,20 +474,6 @@ setInterval(function() {
 			}
 		}
 	}
-
-	try {
-		for(var s in NPCSHOOTER_LIST) {
-			var sh = NPCSHOOTER_LIST[s];
-			if(sh.targetPlayer > 0) {
-				var id = Math.random() * 200;
-				var target = PLAYER_LIST[sh.targetPlayer];
-				BULLET_LIST[id] = Bullet(id, -1, sh.x, sh.y, Math.atan2(target.y - sh.y, target.x - sh.x) * 180 / Math.PI);
-			}
-		}
-	} catch(er) {
-		console.log(er);
-	}
-
 	setTimeout(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
@@ -524,7 +512,7 @@ setInterval(function() {
 	}
 }, 12000);
 
-// NPCAttacket attack loop
+// NPCAttacker and NPCShooter loop
 setInterval(function() {
 	for(var na in ATTACKER_LIST) {
 		var a = ATTACKER_LIST[na];
@@ -540,6 +528,19 @@ setInterval(function() {
 				}
 			}
 		}
+	}
+
+	try {
+		for(var s in NPCSHOOTER_LIST) {
+			var sh = NPCSHOOTER_LIST[s];
+			if(sh.targetPlayer > 0) {
+				var id = Math.random() * 200;
+				var target = PLAYER_LIST[sh.targetPlayer];
+				BULLET_LIST[id] = Bullet(id, -1, sh.x, sh.y, Math.atan2(target.y - sh.y, target.x - sh.x) * 180 / Math.PI);
+			}
+		}
+	} catch(er) {
+		console.log(er);
 	}
 }, 1000);
 
@@ -649,7 +650,8 @@ setInterval(function() {
 			players:playerPack,
 			bullets:bulletPack,
 			blocks:blockPack,
-			attackers:attackerPack
+			attackers:attackerPack,
+			shooters:shooterPack
 		});
 
 		for(var i in SOCKET_LIST) {
