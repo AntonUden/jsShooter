@@ -180,7 +180,7 @@
 			ctx.beginPath();
 			ctx.fillStyle="#FF0000";
 			ctx.fillRect(data[0].shooters[i].x - 5, data[0].shooters[i].y - 5, 10, 10);
-			ctx.fillStyle= ("rgba(" + (255 - (data[0].shooters[i].activationTimer * 3)) + ", " + (255 - (data[0].shooters[i].activationTimer * 3)) + ", 255, 1)");
+			ctx.fillStyle= ("rgba(" + (255 - (data[0].shooters[i].activationTimer * 3)) + ", " + (255 - (data[0].shooters[i].activationTimer * 3)) + ", 0, 1)");
 			ctx.fillRect(data[0].shooters[i].x - 3, data[0].shooters[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
