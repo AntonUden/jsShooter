@@ -106,7 +106,7 @@ var NPCAttacker = function(id, x, y) {
  					
   				} else {
   				}
-  				
+
 			} catch(err) {
 
 			}
@@ -196,15 +196,13 @@ var Bullet = function(id, ownerID, x, y, angle) {
 			if (self.x >= sh.x - 7 && self.x <= sh.x + 7) {
 				if (self.y >= sh.y - 7 && self.y <= sh.y + 7) {
 					sh.hp--;
-					if(!self.owner == -1) {
-						var owner = getPlayerByID(self.owner);
-						if(!(owner == undefined)) {
-							owner.score += 10;
-							if(sh.hp <= 0) {
-								owner.score += 50;
-							}
-						} 
-					}
+					var owner = getPlayerByID(self.owner);
+					if(!(owner == undefined)) {
+						owner.score += 10;
+						if(sh.hp <= 0) {
+							owner.score += 50;
+						}
+					} 
 					self.lifetime = 0;
 				}
 			}
