@@ -112,10 +112,21 @@
 				document.getElementById("upgradefs").disabled = true;
 			}
 		}
+		//quadruple
 
 		if(data.dualBullets == true) {
-			document.getElementById("upgradedb").disabled = true;
-			document.getElementById("upgradedb").innerHTML = "Dual bullets";
+			if(data.quadrupleBullets) {
+				document.getElementById("upgradedb").disabled = true;
+				document.getElementById("upgradedb").innerHTML = "Quadruple bullets";
+			} else {
+				document.getElementById("upgradedb").disabled = true;
+				document.getElementById("upgradedb").innerHTML = "Quadruple bullets (8000)";
+				if(data.score >= 8000) {
+					document.getElementById("upgradedb").disabled = false;
+				} else {
+					document.getElementById("upgradedb").disabled = true;
+				}
+			}
 		} else {
 			document.getElementById("upgradedb").innerHTML = "Dual bullets (5000)";
 			if(data.score >= 5000) {

@@ -255,6 +255,7 @@ var Player = function(id) {
 		name:"Unnamed",
 		dfs:false,
 		dualBullets:false,
+		quadrupleBullets:false,
 		upgHPPrice:500
 	}
 
@@ -272,6 +273,7 @@ var Player = function(id) {
 		self.maxSpd = 3;
 		self.dfs = false;
 		self.dualBullets = false;
+		self.quadrupleBullets = false;
 		self.upgHPPrice = 500;
 	}
 
@@ -453,6 +455,11 @@ io.sockets.on("connection", function(socket) {
 					player.dualBullets = true;
 					player.score-=5000;
 				}
+			} else {
+				if(player.score >= 8000) {
+					player.quadrupleBullets = true;
+					player.score-=8000;
+				}
 			}
 		}
 	});
@@ -480,6 +487,12 @@ setInterval(function() {
 			if(player.dualBullets) {
 				id = Math.random() * 200;
 				BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
+				if(player.quadrupleBullets) {
+					id = Math.random() * 200;
+					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-90);
+					id = Math.random() * 200;
+					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-270);
+				}
 			}
 		}
 	}
@@ -493,6 +506,12 @@ setInterval(function() {
 					if(player.dualBullets) {
 						id = Math.random() * 200;
 						BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
+						if(player.quadrupleBullets) {
+							id = Math.random() * 200;
+							BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-90);
+							id = Math.random() * 200;
+							BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-270);
+						}
 					}
 				}
 			}
@@ -610,6 +629,7 @@ setInterval(function() {
 					upgHP:player.upgHPPrice,
 					score:player.score,
 					dfs:player.dfs,
+					quadrupleBullets:player.quadrupleBullets,
 					dualBullets:player.dualBullets
 				});
 			}
