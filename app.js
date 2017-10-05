@@ -96,6 +96,17 @@ var NPCAttacker = function(id, x, y) {
 				} else {
 					self.targetPlayer = -1;
 				}
+
+				if(!(self.targetPlayer == -1)) {
+ 					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
+ 						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
+ 						self.x += Math.cos(dir/180*Math.PI) * 2;
+ 						self.y += Math.sin(dir/180*Math.PI) * 2;
+ 					}
+ 					
+  				} else {
+  				}
+  				
 			} catch(err) {
 
 			}
