@@ -239,6 +239,7 @@ var Player = function(id) {
 		x:Math.floor(Math.random() * 1180) + 10,
 		y:Math.floor(Math.random() * 580) + 10,
 		id:id,
+		afkKickTimeout:100,
 		joinKickTimeout:10,
 		pressingRight:false,
 		pressingLeft:false,
@@ -410,6 +411,13 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	socket.on('not afk', function(data) {
+		try {
+			var player = getPlayerByID(socket.id);
+			player.afkKickTimeout = 100;
+		} catch(err) {}
+	});
+
 	socket.on('kthx',function(data){
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
@@ -572,10 +580,18 @@ setInterval(function() {
 	}
 }, 1000);
 
+setInterval(function() {
+	for(var i in SOCKET_LIST) {
+		var socket = SOCKET_LIST[i];
+		socket.emit("afk?", {});
+	}
+}, 1000);
+
 // Regen and kick loop
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
+		player.afkKickTimeout--;
 		if(player.hp < player.maxHp) {
 			if(player.regen < 0) {
 				player.regen = 50;
@@ -592,7 +608,7 @@ setInterval(function() {
 		if(player.joinKickTimeout > 0) {
 			player.joinKickTimeout--;
 		}
-		if(player.joinKickTimeout == 0) {
+		if(player.joinKickTimeout == 0 || player.afkKickTimeout <= 0) {
 			delete PLAYER_LIST[player.id];
 			delete SOCKET_LIST[player.id];
 			console.log(colors.red("[jsShooter] Kicked " + player.id + " for inactivity"));

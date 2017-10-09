@@ -94,6 +94,10 @@
 		}, 100);
 	}
 
+	socket.on("afk?", function(data) {
+		socket.emit("not afk");
+	});
+
 	socket.on("price", function(data) {
 		upgHP = data.upgHP;
 		document.getElementById("upgradehp").innerHTML = "Upgrade HP (" + upgHP + ")";
