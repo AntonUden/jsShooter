@@ -52,6 +52,8 @@
 	var mx, my = 0;
 	var upgHP = 500;
 
+	var shooter_blink = 0;
+
 	socket.on("id", function(data) {
 		console.log("Your id is " + data.id);
 		id = data.id;
@@ -148,57 +150,57 @@
 		ctx.fillStyle="#FFFFFF";
 		ctx.fillRect(0,0,1200,600);
 		ctx.textAlign="center";  
-		for(var i = 0; i < data[0].players.length; i++) {
-			if(data[0].players[i].id == id) {
-				var status = "HP: " + data[0].players[i].hp + "/" + data[0].players[i].maxHp + " Score: " + data[0].players[i].score;
+		for(var i = 0; i < data.players.length; i++) {
+			if(data.players[i].id == id) {
+				var status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 				ctx.fillStyle="#00ffaa";
 			} else {
 				ctx.fillStyle="#FF0000";
 			}
-			ctx.fillRect(data[0].players[i].x - 7, data[0].players[i].y - 7, 14, 14);
+			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
 			ctx.fillStyle = "#000000";
-			ctx.fillText(data[0].players[i].name, data[0].players[i].x, data[0].players[i].y - 16);
+			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 16);
 		}
 
-		for(var i = 0; i < data[0].bullets.length; i++) {
-			if(data[0].bullets[i].ownerID == id) {
+		for(var i = 0; i < data.bullets.length; i++) {
+			if(data.bullets[i].ownerID == id) {
 				ctx.fillStyle="#004000";
 				document.getElementById("statusDiv").innerHTML = status;
 			} else {
 				ctx.fillStyle="#400000";
 			}
 			ctx.beginPath();
-			ctx.arc(data[0].bullets[i].x - 2,data[0].bullets[i].y - 2, 2, 0, Math.PI*2, true); 
+			ctx.arc(data.bullets[i].x - 2,data.bullets[i].y - 2, 2, 0, Math.PI*2, true); 
 			ctx.closePath();
 			ctx.fill();
 		}
 
-		for(var i = 0; i < data[0].blocks.length; i++) {
+		for(var i = 0; i < data.blocks.length; i++) {
 			ctx.beginPath();
 			ctx.fillStyle="#000000";
-			ctx.fillRect(data[0].blocks[i].x - 5, data[0].blocks[i].y - 5, 10, 10);
+			ctx.fillRect(data.blocks[i].x - 5, data.blocks[i].y - 5, 10, 10);
 			ctx.fillStyle="#00FF00";
-			ctx.fillRect(data[0].blocks[i].x - 3, data[0].blocks[i].y - 3, 6, 6);
+			ctx.fillRect(data.blocks[i].x - 3, data.blocks[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
 		}
 
-		for(var i = 0; i < data[0].attackers.length; i++) {
+		for(var i = 0; i < data.attackers.length; i++) {
 			ctx.beginPath();
 			ctx.fillStyle="#0000FF";
-			ctx.fillRect(data[0].attackers[i].x - 5, data[0].attackers[i].y - 5, 10, 10);
-			ctx.fillStyle= ("rgba(" + (255 - (data[0].attackers[i].activationTimer * 3)) + ", 0, 0, 1)");
-			ctx.fillRect(data[0].attackers[i].x - 3, data[0].attackers[i].y - 3, 6, 6);
+			ctx.fillRect(data.attackers[i].x - 5, data.attackers[i].y - 5, 10, 10);
+			ctx.fillStyle= ("rgba(" + (255 - (data.attackers[i].activationTimer * 3)) + ", 0, 0, 1)");
+			ctx.fillRect(data.attackers[i].x - 3, data.attackers[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
 		}
 
-		for(var i = 0; i < data[0].shooters.length; i++) {
+		for(var i = 0; i < data.shooters.length; i++) {
 			ctx.beginPath();
 			ctx.fillStyle="#FF0000";
-			ctx.fillRect(data[0].shooters[i].x - 5, data[0].shooters[i].y - 5, 10, 10);
-			ctx.fillStyle= ("rgba(" + (255 - (data[0].shooters[i].activationTimer * 3)) + ", " + (255 - (data[0].shooters[i].activationTimer * 3)) + ", 0, 1)");
-			ctx.fillRect(data[0].shooters[i].x - 3, data[0].shooters[i].y - 3, 6, 6);
+			ctx.fillRect(data.shooters[i].x - 5, data.shooters[i].y - 5, 10, 10);
+			ctx.fillStyle= ("rgba(" + (255 - (data.shooters[i].activationTimer * 3)) + ", " + (255 - (data.shooters[i].activationTimer * 3)) + ", 0, 1)");
+			ctx.fillRect(data.shooters[i].x - 3, data.shooters[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
 		}

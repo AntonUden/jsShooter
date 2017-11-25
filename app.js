@@ -677,6 +677,7 @@ setInterval(function() {
 			attackerPack.push({
 				x:attacker.x,
 				y:attacker.y,
+				target:attacker.targetPlayer,
 				activationTimer:attacker.activationTimer
 			});
 		}
@@ -691,17 +692,15 @@ setInterval(function() {
 			});
 		}
 
-		pack.push({
-			players:playerPack,
-			bullets:bulletPack,
-			blocks:blockPack,
-			attackers:attackerPack,
-			shooters:shooterPack
-		});
-
 		for(var i in SOCKET_LIST) {
 			var socket = SOCKET_LIST[i];
-			socket.emit("newPositions", pack);
+			socket.emit("newPositions", {
+				players:playerPack,
+				bullets:bulletPack,
+				blocks:blockPack,
+				attackers:attackerPack,
+				shooters:shooterPack
+			});
 		}
 	} catch(err) {
 		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
