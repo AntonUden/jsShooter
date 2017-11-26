@@ -52,7 +52,7 @@
 	var mx, my = 0;
 	var upgHP = 500;
 
-	var shooter_blink = 0;
+	var shooter_blink = true;
 
 	socket.on("id", function(data) {
 		console.log("Your id is " + data.id);
@@ -200,6 +200,12 @@
 			ctx.fillStyle="#FF0000";
 			ctx.fillRect(data.shooters[i].x - 5, data.shooters[i].y - 5, 10, 10);
 			ctx.fillStyle= ("rgba(" + (255 - (data.shooters[i].activationTimer * 3)) + ", " + (255 - (data.shooters[i].activationTimer * 3)) + ", 0, 1)");
+			if(data.shooters[i].target == id) {
+				if(shooter_blink) {
+					console.log(2);
+					ctx.fillStyle = "#880000";
+				}
+			}
 			ctx.fillRect(data.shooters[i].x - 3, data.shooters[i].y - 3, 6, 6);
 			ctx.closePath();
 			ctx.fill();
@@ -229,6 +235,10 @@
 		};
 		socket.emit('mouseMove',pack);
 	}, 50);
+
+	setInterval(function() {
+		shooter_blink = !shooter_blink;
+	}, 500);
 
 	document.onkeydown = function(event){
 		if(event.keyCode === 68)	//d

@@ -677,7 +677,6 @@ setInterval(function() {
 			attackerPack.push({
 				x:attacker.x,
 				y:attacker.y,
-				target:attacker.targetPlayer,
 				activationTimer:attacker.activationTimer
 			});
 		}
@@ -688,6 +687,7 @@ setInterval(function() {
 			shooterPack.push({
 				x:sh.x,
 				y:sh.y,
+				target:sh.targetPlayer,
 				activationTimer:sh.activationTimer
 			});
 		}
