@@ -46,6 +46,13 @@
 	var canvas = document.getElementById('ctx');
 	var ctx = canvas.getContext("2d");
 	ctx.font = "10px Arial";
+	ctx.fillStyle = "#BBBBBB";	
+	for(var bgLineX = 0; bgLineX < 1200; bgLineX+=20) {
+		ctx.fillRect(bgLineX, 0, 1, 600);
+	}
+	for(var bgLineY = 0; bgLineY < 600; bgLineY+=20) {
+		ctx.fillRect(0, bgLineY, 1200, 1);
+	}
 
 	var socket = io();
 	var id = 0.0;
@@ -149,7 +156,14 @@
 		ctx.clearRect(0,0,1200,600);
 		ctx.fillStyle="#FFFFFF";
 		ctx.fillRect(0,0,1200,600);
-		ctx.textAlign="center";  
+		ctx.textAlign="center";
+		ctx.fillStyle = "#BBBBBB";	
+		for(var bgLineX = 0; bgLineX < 1200; bgLineX+=20) {
+			ctx.fillRect(bgLineX, 0, 1, 600);
+		}
+		for(var bgLineY = 0; bgLineY < 600; bgLineY+=20) {
+			ctx.fillRect(0, bgLineY, 1200, 1);
+		}
 		for(var i = 0; i < data.players.length; i++) {
 			if(data.players[i].id == id) {
 				var status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
