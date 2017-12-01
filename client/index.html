@@ -310,11 +310,19 @@
 	function mouseMove(e) {
 		if(e.clientY < window.innerHeight - 60 && uiVisible) {
 			uiVisible = false;
+			unfocus();
 			uiDiv.style.height = "0px";
 		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
 			uiVisible = true;
 			uiDiv.style.height = "50px";
 		}
+	}
+
+	function unfocus(){
+		var tmp = document.createElement("input");
+		document.body.appendChild(tmp);
+		tmp.focus();
+		document.body.removeChild(tmp);
 	}
 </script>
 </body>
