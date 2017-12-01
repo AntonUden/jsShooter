@@ -14,7 +14,7 @@ var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
 
-console.log(colors.green("[jsShooter] Server started on port " + port));
+console.log(colors.green("[jsShooter] Socket started on port " + port));
 
 var SOCKET_LIST = {};
 var PLAYER_LIST = {};
@@ -162,8 +162,8 @@ var Bullet = function(id, ownerID, x, y, angle) {
 
 		for(var b in BLOCK_LIST) {
 			var block = BLOCK_LIST[b];
-			if (self.x >= block.x - 7 && self.x <= block.x + 7) {
-				if (self.y >= block.y - 7 && self.y <= block.y + 7) {
+			if (self.x >= block.x - 8 && self.x <= block.x + 8) {
+				if (self.y >= block.y - 8 && self.y <= block.y + 8) {
 					delete BLOCK_LIST[block.id];
 					var owner = getPlayerByID(self.owner);
 					if(!(owner == undefined)) {
@@ -285,22 +285,22 @@ var Player = function(id) {
 		}
 
 		if(self.pressingRight) {
-			if(self.x < (1200 - self.maxSpd)) {
+			if(self.x < (1200 - self.maxSpd) - 10) {
 				self.x += self.maxSpd;
 			}
 		}
 		if(self.pressingLeft) {
-			if(self.x > (0 + self.maxSpd)) {
+			if(self.x > (0 + self.maxSpd) + 10) {
 				self.x -= self.maxSpd;
 			}
 		}
 		if(self.pressingUp) {
-			if(self.y > (0 + self.maxSpd)) {
+			if(self.y > (0 + self.maxSpd) + 10) {
 				self.y -= self.maxSpd;
 			}
 		}
 		if(self.pressingDown) {
-			if(self.y < (600 - self.maxSpd)) {
+			if(self.y < (600 - self.maxSpd) - 10) {
 				self.y += self.maxSpd;
 			}
 		}
@@ -711,3 +711,4 @@ setInterval(function() {
 for(var spBlock = 0; spBlock < 5; spBlock++) {
 	spawnBlock();
 }
+console.log(colors.green("[jsShooter] Server started "));
