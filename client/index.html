@@ -15,37 +15,55 @@
 		-moz-background-size: cover;
 		-o-background-size: cover;
 		background-size: cover;
+		overflow: hidden;
+		display: block;
 	}
 
 	#ctx {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
 		border:1px solid #000000;
+		z-index:-1;
 	}
 
 	#uiDiv {
 		background-color: rgba(255,255,255,0.6);
-
+		overflow-y: hidden;
+		position: absolute;
+		z-index: 2;
+		border:1px solid #000000;
+		bottom: 0;
+		right: 0;
+		left: 0;
+		height: 0;
+		width: 100%;
+		transition: 1s;
 	}
 </style>
 </head>
-<body>
-<center>
+<body onmousemove="mouseMove(event);">
 <canvas id="ctx" width="1200" height="600"></canvas>
 <div id="uiDiv">
-<div id="statusDiv" style="white-space: nowrap;"></div>
-<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
-<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
-<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
-<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
-<button id="setName" onclick="changeName()">Set name</button>
-<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
+	<center>
+		<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+		<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+		<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
+		<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
+		<button id="setName" onclick="changeName()">Set name</button>
+		<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
+	</center>
 </div>
-</center>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
+	var uiDiv = document.getElementById("uiDiv");
 	var canvas = document.getElementById('ctx');
 	var ctx = canvas.getContext("2d");
 	ctx.font = "10px Arial";
+	ctx.textAlign="center";
 	ctx.fillStyle = "#BBBBBB";	
 	for(var bgLineX = 0; bgLineX < 1200; bgLineX+=20) {
 		ctx.fillRect(bgLineX, 0, 1, 600);
@@ -54,13 +72,17 @@
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
 
+	uiDiv.style.height = "0px";
+
 	var socket = io();
 	var id = 0.0;
 	var mx, my = 0;
 	var upgHP = 500;
 
+	var uiVisible = false;
 	var shooter_blink = true;
-
+	var dead = false;
+	var respawnCooldown = 0;
 	socket.on("id", function(data) {
 		console.log("Your id is " + data.id);
 		id = data.id;
@@ -157,7 +179,8 @@
 		ctx.fillStyle="#FFFFFF";
 		ctx.fillRect(0,0,1200,600);
 		ctx.textAlign="center";
-		ctx.fillStyle = "#BBBBBB";	
+		ctx.fillStyle = "#BBBBBB";
+		ctx.font="15px Arial";
 		for(var bgLineX = 0; bgLineX < 1200; bgLineX+=20) {
 			ctx.fillRect(bgLineX, 0, 1, 600);
 		}
@@ -168,6 +191,11 @@
 			if(data.players[i].id == id) {
 				var status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 				ctx.fillStyle="#00ffaa";
+				dead = false;
+				if(data.players[i].spawnCooldown > -1) {
+					dead = true;
+					respawnCooldown = data.players[i].spawnCooldown;
+				}
 			} else {
 				ctx.fillStyle="#FF0000";
 			}
@@ -177,7 +205,6 @@
 				ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 16);
 			}
 		}
-		document.getElementById("statusDiv").innerHTML = status;
 		for(var i = 0; i < data.bullets.length; i++) {
 			ctx.fillStyle = "#000000";
 			ctx.beginPath();
@@ -220,7 +247,17 @@
 			ctx.closePath();
 			ctx.fill();
 		}
-			
+		ctx.font="20px Arial";
+		ctx.fillStyle = "#000000";
+		ctx.fillText(status, 600, 20);
+		if(dead) {
+			ctx.font="70px Arial";
+			ctx.fillStyle = "#440000";
+			ctx.fillText("You are dead", 600, 300);
+			ctx.font="15px Arial";
+			ctx.fillStyle = "#000000";
+			ctx.fillText("Respawn in " + respawnCooldown, 600, 380);
+		}			
 	});
 
 	function getMousePos(canvas, evt) {
@@ -269,6 +306,16 @@
 			socket.emit('keyPress',{inputId:'left',state:false});
 		else if(event.keyCode === 87) // w
 			socket.emit('keyPress',{inputId:'up',state:false});
+	}
+	function mouseMove(e) {
+		console.log(e.clientY + " " + window.innerHeight + " " + uiVisible);
+		if(e.clientY < window.innerHeight - 60 && uiVisible) {
+			uiVisible = false;
+			uiDiv.style.height = "0px";
+		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
+			uiVisible = true;
+			uiDiv.style.height = "50px";
+		}
 	}
 </script>
 </body>
