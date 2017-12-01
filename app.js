@@ -10,6 +10,7 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
+var fps = 30;
 var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
@@ -42,8 +43,10 @@ var NPCShooter = function(id, x, y) {
 				var dist = {};
 				for(var p in PLAYER_LIST) {
 					var player = PLAYER_LIST[p];
-					var d = getDistance(self.x, self.y, player.x, player.y);
-					dist[player.id] = d;
+					if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+						var d = getDistance(self.x, self.y, player.x, player.y);
+						dist[player.id] = d;
+					}
 				}
 				var target = getSmallest(dist);
 				if(!(target == undefined)) {
@@ -87,8 +90,10 @@ var NPCAttacker = function(id, x, y) {
 				var dist = {};
 				for(var p in PLAYER_LIST) {
 					var player = PLAYER_LIST[p];
-					var d = getDistance(self.x, self.y, player.x, player.y);
-					dist[player.id] = d;
+					if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+						var d = getDistance(self.x, self.y, player.x, player.y);
+						dist[player.id] = d;
+					}
 				}
 				var target = getSmallest(dist);
 				if(!(target == undefined)) {
@@ -137,7 +142,7 @@ var Bullet = function(id, ownerID, x, y, angle) {
 		self.lifetime--;
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
-			if(player.joinKickTimeout < 0) {
+			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
 				if (self.x >= player.x - 8 && self.x <= player.x + 8) {
 					if (self.y >= player.y - 8 && self.y <= player.y + 8) {
 						if(!(self.owner == player.id)) {
@@ -239,6 +244,7 @@ var Player = function(id) {
 		x:Math.floor(Math.random() * 1180) + 10,
 		y:Math.floor(Math.random() * 580) + 10,
 		id:id,
+		spawnCooldown:-1,
 		afkKickTimeout:100,
 		joinKickTimeout:10,
 		pressingRight:false,
@@ -268,7 +274,7 @@ var Player = function(id) {
 		self.pressingUp = false;
 		self.pressingDown = false;
 		self.hp = 10;
-		self.score = 0;
+		self.score = Math.round(self.score / 5);
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
@@ -276,6 +282,7 @@ var Player = function(id) {
 		self.dualBullets = false;
 		self.quadrupleBullets = false;
 		self.upgHPPrice = 500;
+		self.spawnCooldown = 20;
 	}
 
 	self.update = function() {
@@ -283,25 +290,26 @@ var Player = function(id) {
 			self.respawn();
 			return;
 		}
-
-		if(self.pressingRight) {
-			if(self.x < (1200 - self.maxSpd) - 10) {
-				self.x += self.maxSpd;
+		if(self.spawnCooldown < 0) {
+			if(self.pressingRight) {
+				if(self.x < (1200 - self.maxSpd) - 10) {
+					self.x += self.maxSpd;
+				}
 			}
-		}
-		if(self.pressingLeft) {
-			if(self.x > (0 + self.maxSpd) + 10) {
-				self.x -= self.maxSpd;
+			if(self.pressingLeft) {
+				if(self.x > (0 + self.maxSpd) + 10) {
+					self.x -= self.maxSpd;
+				}
 			}
-		}
-		if(self.pressingUp) {
-			if(self.y > (0 + self.maxSpd) + 10) {
-				self.y -= self.maxSpd;
+			if(self.pressingUp) {
+				if(self.y > (0 + self.maxSpd) + 10) {
+					self.y -= self.maxSpd;
+				}
 			}
-		}
-		if(self.pressingDown) {
-			if(self.y < (600 - self.maxSpd) - 10) {
-				self.y += self.maxSpd;
+			if(self.pressingDown) {
+				if(self.y < (600 - self.maxSpd) - 10) {
+					self.y += self.maxSpd;
+				}
 			}
 		}
 	}
@@ -489,7 +497,7 @@ io.sockets.on("connection", function(socket) {
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
-		if(player.joinKickTimeout < 0) {
+		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
 			var id = Math.random() * 200;
 			BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
 			if(player.dualBullets) {
@@ -507,7 +515,7 @@ setInterval(function() {
 	setTimeout(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
-			if(player.joinKickTimeout < 0) {
+			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
 				if(player.dfs) {
 					var id = Math.random() * 200;
 					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
@@ -527,12 +535,20 @@ setInterval(function() {
 	}, 150);
 }, 250);
 
-// Spawn blocks
+// Spawn blocks and player respawn cooldown
 setInterval(function() {
-	if(Object.keys(BLOCK_LIST).length < 20) {
+	if(Object.keys(BLOCK_LIST).length < 30) {
 		spawnBlock();
 	}
-}, 2500);
+	try {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(!(player.spawnCooldown < 0)) {
+				player.spawnCooldown--;
+			}
+		}
+	}catch(err) {};
+}, 1000);
 
 // Spawn attackers
 setInterval(function() {
@@ -638,7 +654,8 @@ setInterval(function() {
 					hp:player.hp,
 					maxHp:player.maxHp,
 					score:player.score,
-					id:player.id
+					id:player.id,
+					spawnCooldown:player.spawnCooldown
 				});
 				var socket = SOCKET_LIST[p];
 				socket.emit("price", {
@@ -705,10 +722,10 @@ setInterval(function() {
 	} catch(err) {
 		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
 	}
-},(1000 / 25));
+},(1000 / fps));
 
-//Spawn 5 block at start
-for(var spBlock = 0; spBlock < 5; spBlock++) {
+//Spawn 20 block at start
+for(var spBlock = 0; spBlock < 20; spBlock++) {
 	spawnBlock();
 }
 console.log(colors.green("[jsShooter] Server started "));
