@@ -75,7 +75,7 @@ var NPCAttacker = function(id, x, y) {
 		x:x,
 		y:y,
 		targetPlayer:-1,
-		hp:10,
+		hp:5,
 		activationTimer:100
 	}
 
