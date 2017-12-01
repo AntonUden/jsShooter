@@ -308,7 +308,6 @@
 			socket.emit('keyPress',{inputId:'up',state:false});
 	}
 	function mouseMove(e) {
-		console.log(e.clientY + " " + window.innerHeight + " " + uiVisible);
 		if(e.clientY < window.innerHeight - 60 && uiVisible) {
 			uiVisible = false;
 			uiDiv.style.height = "0px";
