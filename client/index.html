@@ -175,14 +175,9 @@
 			ctx.fillStyle = "#000000";
 			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 16);
 		}
-
+		document.getElementById("statusDiv").innerHTML = status;
 		for(var i = 0; i < data.bullets.length; i++) {
-			if(data.bullets[i].ownerID == id) {
-				ctx.fillStyle="#004000";
-				document.getElementById("statusDiv").innerHTML = status;
-			} else {
-				ctx.fillStyle="#400000";
-			}
+			ctx.fillStyle = "#000000";
 			ctx.beginPath();
 			ctx.arc(data.bullets[i].x - 2,data.bullets[i].y - 2, 2, 0, Math.PI*2, true); 
 			ctx.closePath();
