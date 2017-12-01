@@ -32,6 +32,7 @@
 	#uiDiv {
 		background-color: rgba(255,255,255,0.6);
 		overflow-y: hidden;
+		text-align: center;
 		position: absolute;
 		z-index: 2;
 		border:1px solid #000000;
@@ -47,14 +48,12 @@
 <body onmousemove="mouseMove(event);">
 <canvas id="ctx" width="1200" height="600"></canvas>
 <div id="uiDiv">
-	<center>
-		<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
-		<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
-		<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
-		<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
-		<button id="setName" onclick="changeName()">Set name</button>
-		<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
-	</center>
+	<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+	<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+	<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
+	<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
+	<button id="setName" onclick="changeName()">Set name</button>
+	<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
 </div>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
