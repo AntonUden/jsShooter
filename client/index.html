@@ -39,7 +39,7 @@
 		bottom: 0;
 		right: 0;
 		left: 0;
-		height: 100%;
+		height: 60px;
 		width: 100%;
 		transition: 1s;
 	}
@@ -72,7 +72,9 @@
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
 
-	uiDiv.style.height = "0px";
+	setTimeout(function() {
+		uiDiv.style.height = "0px";
+	}, 500);
 
 	var socket = io();
 	var id = 0.0;
