@@ -285,6 +285,23 @@ var Player = function(id) {
 		self.spawnCooldown = 20;
 	}
 
+	self.fireBullet = function() {
+		if(self.joinKickTimeout < 0 && self.spawnCooldown < 0) {
+			var id = Math.random() * 200;
+			BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI);
+			if(self.dualBullets) {
+				id = Math.random() * 200;
+				BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-180);
+				if(self.quadrupleBullets) {
+					id = Math.random() * 200;
+					BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-90);
+					id = Math.random() * 200;
+					BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-270);
+				}
+			}
+		}
+	}
+
 	self.update = function() {
 		if(self.hp <= 0) {
 			self.respawn();
@@ -497,38 +514,14 @@ io.sockets.on("connection", function(socket) {
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
-		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-			var id = Math.random() * 200;
-			BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
-			if(player.dualBullets) {
-				id = Math.random() * 200;
-				BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
-				if(player.quadrupleBullets) {
-					id = Math.random() * 200;
-					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-90);
-					id = Math.random() * 200;
-					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-270);
-				}
-			}
-		}
+		player.fireBullet();
 	}
 	setTimeout(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
 				if(player.dfs) {
-					var id = Math.random() * 200;
-					BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI);
-					if(player.dualBullets) {
-						id = Math.random() * 200;
-						BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-180);
-						if(player.quadrupleBullets) {
-							id = Math.random() * 200;
-							BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-90);
-							id = Math.random() * 200;
-							BULLET_LIST[id] = Bullet(id, player.id, player.x, player.y, (Math.atan2(player.my - player.y, player.mx - player.x) * 180 / Math.PI)-270);
-						}
-					}
+					player.fireBullet();
 				}
 			}
 		}
