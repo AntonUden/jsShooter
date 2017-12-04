@@ -39,7 +39,7 @@
 		bottom: 0;
 		right: 0;
 		left: 0;
-		height: 0;
+		height: 100%;
 		width: 100%;
 		transition: 1s;
 	}
@@ -63,7 +63,8 @@
 	var ctx = canvas.getContext("2d");
 	ctx.font = "10px Arial";
 	ctx.textAlign="center";
-	ctx.fillStyle = "#BBBBBB";	
+	ctx.fillStyle = "#BBBBBB";
+
 	for(var bgLineX = 0; bgLineX < 1200; bgLineX+=20) {
 		ctx.fillRect(bgLineX, 0, 1, 600);
 	}
@@ -75,7 +76,8 @@
 
 	var socket = io();
 	var id = 0.0;
-	var mx, my = 0;
+	var mx = 0;
+	var my = 0;
 	var upgHP = 500;
 
 	var uiVisible = false;
@@ -256,23 +258,9 @@
 			ctx.font="15px Arial";
 			ctx.fillStyle = "#000000";
 			ctx.fillText("Respawn in " + respawnCooldown, 600, 380);
-		}			
+		}		
 	});
 
-	function getMousePos(canvas, evt) {
-		var rect = canvas.getBoundingClientRect();
-		return {
-			x: evt.clientX - rect.left,
-			y: evt.clientY - rect.top
-		};
-	}
-
-	canvas.addEventListener('mousemove', function(evt) {
-		var mousePos = getMousePos(canvas, evt);
-		mx = mousePos.x;
-		my = mousePos.y;
-	}, false);
-	
 	// Sends mouse position to the server 20 times per second
 	setInterval(function() {
 		var pack = {
@@ -307,6 +295,9 @@
 			socket.emit('keyPress',{inputId:'up',state:false});
 	}
 	function mouseMove(e) {
+		console.log(e.clientX+ " " + window.innerWidth + " " + Math.round(e.clientX / window.innerWidth * 1200));
+		mx = Math.round(e.clientX / window.innerWidth * 1200);
+		my = Math.round(e.clientY / window.innerHeight * 600);
 		if(e.clientY < window.innerHeight - 60 && uiVisible) {
 			uiVisible = false;
 			unfocus();
