@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+w<!DOCTYPE html>
 <html>
 <head>
 <meta name="theme-color" content="#309090" />
@@ -128,6 +128,27 @@
 		}, 100);
 	}
 
+	function mouseMove(e) {
+		console.log(e.clientX+ " " + window.innerWidth + " " + Math.round(e.clientX / window.innerWidth * 1200));
+		mx = Math.round(e.clientX / window.innerWidth * 1200);
+		my = Math.round(e.clientY / window.innerHeight * 600);
+		if(e.clientY < window.innerHeight - 60 && uiVisible) {
+			uiVisible = false;
+			unfocus();
+			uiDiv.style.height = "0px";
+		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
+			uiVisible = true;
+			uiDiv.style.height = "50px";
+		}
+	}
+
+	function unfocus(){
+		var tmp = document.createElement("input");
+		document.body.appendChild(tmp);
+		tmp.focus();
+		document.body.removeChild(tmp);
+	}
+
 	socket.on("afk?", function(data) {
 		socket.emit("not afk");
 	});
@@ -142,8 +163,17 @@
 		}
 
 		if(data.dfs == true) {
-			document.getElementById("upgradefs").disabled = true;
-			document.getElementById("upgradefs").innerHTML = "Double fire speed";
+			if(data.qfs == true) {
+				document.getElementById("upgradefs").innerHTML = "Quadruple fire speed";
+				document.getElementById("upgradefs").disabled = true;
+			} else {
+				document.getElementById("upgradefs").innerHTML = "Quadruple fire speed (8000)";
+				if(data.score >= 8000) {
+					document.getElementById("upgradefs").disabled = false;
+				} else {
+					document.getElementById("upgradefs").disabled = true;
+				}
+			}
 		} else {
 			document.getElementById("upgradefs").innerHTML = "Double fire speed (2000)";
 			if(data.score >= 2000) {
@@ -295,26 +325,6 @@
 			socket.emit('keyPress',{inputId:'left',state:false});
 		else if(event.keyCode === 87) // w
 			socket.emit('keyPress',{inputId:'up',state:false});
-	}
-	function mouseMove(e) {
-		console.log(e.clientX+ " " + window.innerWidth + " " + Math.round(e.clientX / window.innerWidth * 1200));
-		mx = Math.round(e.clientX / window.innerWidth * 1200);
-		my = Math.round(e.clientY / window.innerHeight * 600);
-		if(e.clientY < window.innerHeight - 60 && uiVisible) {
-			uiVisible = false;
-			unfocus();
-			uiDiv.style.height = "0px";
-		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
-			uiVisible = true;
-			uiDiv.style.height = "50px";
-		}
-	}
-
-	function unfocus(){
-		var tmp = document.createElement("input");
-		document.body.appendChild(tmp);
-		tmp.focus();
-		document.body.removeChild(tmp);
 	}
 </script>
 </body>

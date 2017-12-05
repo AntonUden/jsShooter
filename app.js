@@ -159,6 +159,14 @@ var Bullet = function(id, ownerID, x, y, angle) {
 								if(player.hp <= 0) {
 									owner.score += 100;
 									owner.score += Math.floor(player.score / 4);
+									if(player.dfs)
+										owner.score+=500;
+									if(player.qfs)
+										owner.score+=2000;
+									if(player.dualBullets)
+										owner.score+=1250;
+									if(owner.quadrupleBullets)
+										owner.score+=2000;
 									if(owner.hp < owner.maxHp) {
 										owner.hp++;
 									}
@@ -267,6 +275,7 @@ var Player = function(id) {
 		maxSpd:3,
 		name:"Unnamed",
 		dfs:false,
+		qfs:false,
 		dualBullets:false,
 		quadrupleBullets:false,
 		upgHPPrice:500
@@ -280,11 +289,12 @@ var Player = function(id) {
 		self.pressingUp = false;
 		self.pressingDown = false;
 		self.hp = 10;
-		self.score = Math.round(self.score / 5);
+		self.score = Math.round(self.score / 10);
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
 		self.dfs = false;
+		self.qfs = false;
 		self.dualBullets = false;
 		self.quadrupleBullets = false;
 		self.upgHPPrice = 500;
@@ -481,6 +491,11 @@ io.sockets.on("connection", function(socket) {
 					player.dfs = true;
 					player.score-=2000;
 				}
+			} else if(!player.qfs) {
+				if(player.score >= 8000) {
+					player.qfs = true;
+					player.score-=8000;
+				}
 			}
 		}
 	});
@@ -532,6 +547,26 @@ setInterval(function() {
 			}
 		}
 	}, 150);
+	setTimeout(function() {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+				if(player.qfs) {
+					player.fireBullet();
+				}
+			}
+		}
+	}, 50);
+	setTimeout(function() {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+				if(player.qfs) {
+					player.fireBullet();
+				}
+			}
+		}
+	}, 200);
 }, 250);
 
 // Spawn blocks and player respawn cooldown
@@ -662,6 +697,7 @@ setInterval(function() {
 					upgHP:player.upgHPPrice,
 					score:player.score,
 					dfs:player.dfs,
+					qfs:player.qfs,
 					quadrupleBullets:player.quadrupleBullets,
 					dualBullets:player.dualBullets
 				});
@@ -723,6 +759,16 @@ setInterval(function() {
 		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
 	}
 },(1000 / fps));
+
+// Error correcting code loop
+setInterval(function() {
+	for(var p in PLAYER_LIST) {
+		var player = PLAYER_LIST[i];
+		if(player.hp > player.maxHp) {
+			player.hp = player.maxHp;
+		}
+	}
+}, 5000);
 
 //Spawn 20 block at start
 for(var spBlock = 0; spBlock < 20; spBlock++) {
