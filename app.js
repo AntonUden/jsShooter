@@ -763,7 +763,7 @@ setInterval(function() {
 // Error correcting code loop
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
-		var player = PLAYER_LIST[i];
+		var player = PLAYER_LIST[p];
 		if(player.hp > player.maxHp) {
 			player.hp = player.maxHp;
 		}
