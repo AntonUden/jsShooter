@@ -31,7 +31,7 @@ var NPCShooter = function(id, x, y) {
 		x:x,
 		y:y,
 		targetPlayer:-1,
-		hp:5,
+		hp:2,
 		activationTimer:100
 	}
 
@@ -51,6 +51,11 @@ var NPCShooter = function(id, x, y) {
 				var target = getSmallest(dist);
 				if(!(target == undefined)) {
 					self.targetPlayer = target;
+					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
+ 						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
+ 						self.x += Math.cos(dir/180*Math.PI) * 0.5;
+ 						self.y += Math.sin(dir/180*Math.PI) * 0.5;
+ 					}
 				} else {
 					self.targetPlayer = -1;
 				}
@@ -59,6 +64,7 @@ var NPCShooter = function(id, x, y) {
 					
 				} else {
 				}
+
 			} catch(err) {
 
 			}
@@ -552,10 +558,10 @@ setInterval(function() {
 
 // Spawn shooters
 setInterval(function() {
-	if(Object.keys(NPCSHOOTER_LIST).length < 1) {
+	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * 10) == 1) {
 		spawnShooter();
 	}
-}, 12000);
+}, 1000);
 
 // NPCAttacker and NPCShooter loop
 setInterval(function() {
@@ -589,6 +595,7 @@ setInterval(function() {
 	}
 }, 1000);
 
+// AFK Test loop
 setInterval(function() {
 	for(var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
