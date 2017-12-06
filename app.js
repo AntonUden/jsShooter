@@ -31,8 +31,22 @@ var NPCShooter = function(id, x, y) {
 		x:x,
 		y:y,
 		targetPlayer:-1,
-		hp:2,
+		hp:3,
 		activationTimer:100
+	}
+
+	if(countOPPlayers() > 0) {
+		self.hp = 5;
+	}
+
+	self.fireBullet = function() {
+		try {
+			var bID = Math.random() * 200;
+			var target = PLAYER_LIST[self.targetPlayer];
+			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI);
+		} catch(error) {
+
+		}
 	}
 
 	self.update = function() {
@@ -43,15 +57,22 @@ var NPCShooter = function(id, x, y) {
 				var dist = {};
 				for(var p in PLAYER_LIST) {
 					var player = PLAYER_LIST[p];
-					if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-						var d = getDistance(self.x, self.y, player.x, player.y);
-						dist[player.id] = d;
+					if(countOPPlayers() < 1) {
+						if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+							var d = getDistance(self.x, self.y, player.x, player.y);
+							dist[player.id] = d;
+						}
+					} else {
+						if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.dfs && player.qfs && player.dualBullets && player.quadrupleBullets) {
+							var d = getDistance(self.x, self.y, player.x, player.y);
+							dist[player.id] = d;
+						}
 					}
 				}
 				var target = getSmallest(dist);
 				if(!(target == undefined)) {
 					self.targetPlayer = target;
-					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 8) {
+					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 50 && countOPPlayers() < 1) {
  						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
  						self.x += Math.cos(dir/180*Math.PI) * 0.5;
  						self.y += Math.sin(dir/180*Math.PI) * 0.5;
@@ -289,7 +310,7 @@ var Player = function(id) {
 		self.pressingUp = false;
 		self.pressingDown = false;
 		self.hp = 10;
-		self.score = Math.round(self.score / 10);
+		self.score = Math.round(self.score / 3);
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
@@ -390,6 +411,17 @@ function countActivePlayers() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
 		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+			result++;
+		}
+	}
+	return result;
+}
+
+function countOPPlayers() {
+	var result = 0;
+	for(var p in PLAYER_LIST) {
+		var player = PLAYER_LIST[p];
+		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.dfs && player.qfs && player.dualBullets && player.quadrupleBullets) {
 			result++;
 		}
 	}
@@ -606,7 +638,11 @@ setInterval(function() {
 
 // Spawn shooters
 setInterval(function() {
-	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * 10) == 1) {
+	var r = 15;
+	if(countOPPlayers() > 0) {
+		r = 5;
+	}
+	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * r) == 1) {
 		if(countActivePlayers() > 0) {
 			spawnShooter();
 		}
@@ -615,30 +651,37 @@ setInterval(function() {
 
 // NPCAttacker and NPCShooter loop
 setInterval(function() {
-	for(var na in ATTACKER_LIST) {
-		var a = ATTACKER_LIST[na];
-		if(!a.activationTimer > 0) {
-			for(var p in PLAYER_LIST) {
-				var player = PLAYER_LIST[p];
+	try {
+		for(var na in ATTACKER_LIST) {
+			var a = ATTACKER_LIST[na];
+			if(!a.activationTimer > 0) {
+				for(var p in PLAYER_LIST) {
+					var player = PLAYER_LIST[p];
 
-				if(getDistance(a.x, a.y, player.x, player.y) < 10) {
-					player.hp --;
-					if(player.hp <= 0) {
-						a.hp = 10;
+					if(getDistance(a.x, a.y, player.x, player.y) < 10) {
+						player.hp --;
+						if(player.hp <= 0) {
+							a.hp = 10;
+						}
 					}
 				}
 			}
 		}
-	}
-
-	try {
 		for(var s in NPCSHOOTER_LIST) {
 			var sh = NPCSHOOTER_LIST[s];
 			if(sh.targetPlayer > 0) {
-				var id = Math.random() * 200;
-				var target = PLAYER_LIST[sh.targetPlayer];
-				BULLET_LIST[id] = Bullet(id, -1, sh.x, sh.y, Math.atan2(target.y - sh.y, target.x - sh.x) * 180 / Math.PI);
+				sh.fireBullet();
 			}
+		}
+		if(countOPPlayers() > 0) {
+			setTimeout(function() {
+				for(var s in NPCSHOOTER_LIST) {
+					var sh = NPCSHOOTER_LIST[s];
+					if(sh.targetPlayer > 0) {
+						sh.fireBullet();
+					}
+				}
+			}, 500);
 		}
 	} catch(er) {
 		console.log(er);
