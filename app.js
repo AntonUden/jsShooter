@@ -385,6 +385,17 @@ function getSmallest(obj) {
 	return key;
 }
 
+function countActivePlayers() {
+	var result = 0;
+	for(var p in PLAYER_LIST) {
+		var player = PLAYER_LIST[p];
+		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
+			result++;
+		}
+	}
+	return result;
+}
+
 function spawnBlock() {
 	var id = (Math.random() * 10);
 	BLOCK_LIST[id] = NPCBlock(id);
@@ -587,14 +598,18 @@ setInterval(function() {
 // Spawn attackers
 setInterval(function() {
 	if(Object.keys(ATTACKER_LIST).length < 3) {
-		spawnAttacker();
+		if(countActivePlayers() > 0) {
+			spawnAttacker();
+		}
 	}
 }, 10000);
 
 // Spawn shooters
 setInterval(function() {
 	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * 10) == 1) {
-		spawnShooter();
+		if(countActivePlayers() > 0) {
+			spawnShooter();
+		}
 	}
 }, 1000);
 
