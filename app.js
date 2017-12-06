@@ -165,7 +165,7 @@ var Bullet = function(id, ownerID, x, y, angle) {
 										owner.score+=2000;
 									if(player.dualBullets)
 										owner.score+=1250;
-									if(owner.quadrupleBullets)
+									if(player.quadrupleBullets)
 										owner.score+=2000;
 									if(owner.hp < owner.maxHp) {
 										owner.hp++;
