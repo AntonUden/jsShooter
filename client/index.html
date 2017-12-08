@@ -43,10 +43,57 @@
 		width: 100%;
 		transition: 1s;
 	}
+
+	#scoreDiv {
+		background-color: rgba(0,0,0,0.0);
+		overflow-y: hidden;
+		text-align: center;
+		position: absolute;
+		z-index: 2;
+		position: absolute;
+    	top:10px;
+    	bottom: 0;
+    	left: 0;
+    	right: 0;
+    	margin: auto;
+    	font-size: 150%;
+	}
+	#death {
+		background-color: rgba(0,0,0,0.0);
+		text-align: center;
+		z-index: 2;
+		position: absolute;
+		margin: auto;
+		top: 70%;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: none;
+	}
+	#youaredead {
+		text-align: center;
+		font-size: 500%;
+	}
+	#countdown {
+		text-align: center;
+		font-size: 150%;
+	}
 </style>
 </head>
 <body onmousemove="mouseMove(event);">
 <canvas id="ctx" width="1200" height="600"></canvas>
+
+<div id="scoreDiv"></div>
+<div id="death">
+	<div id="youaredead">
+		You are dead
+	</div>
+	<br>
+	<div id="countdown">0
+	</div>
+</div>
 <div id="uiDiv">
 	<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
 	<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
@@ -59,6 +106,8 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
 	var uiDiv = document.getElementById("uiDiv");
+	var countdownDiv = document.getElementById("countdown");
+	var scoreDiv = document.getElementById("scoreDiv");
 	var canvas = document.getElementById('ctx');
 	var ctx = canvas.getContext("2d");
 	ctx.font = "10px Arial";
@@ -280,16 +329,12 @@
 			ctx.closePath();
 			ctx.fill();
 		}
-		ctx.font="20px Arial";
-		ctx.fillStyle = "#000000";
-		ctx.fillText(status, 600, 20);
+		scoreDiv.innerHTML = status;
 		if(dead) {
-			ctx.font="70px Arial";
-			ctx.fillStyle = "#440000";
-			ctx.fillText("You are dead", 600, 300);
-			ctx.font="15px Arial";
-			ctx.fillStyle = "#000000";
-			ctx.fillText("Respawn in " + respawnCooldown, 600, 380);
+			document.getElementById("death").style.display = 'inline';
+			countdownDiv.innerHTML = "Respawn in " + respawnCooldown;
+		} else {
+			document.getElementById("death").style.display = 'none';
 		}		
 	});
 
