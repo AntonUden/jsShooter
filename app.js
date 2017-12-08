@@ -653,6 +653,19 @@ setInterval(function() {
 	}
 }, 1000);
 
+// Despawn shooters
+setInterval(function() {
+	if(countActivePlayers() < 1) {
+		for(var s in NPCSHOOTER_LIST) {
+			var sh = NPCSHOOTER_LIST[s];
+			if(Math.floor(Math.random() * 10) == 1) {
+				sh.hp = 0;
+				break;
+			}
+		}
+	}
+}, 1000);
+
 // NPCAttacker and NPCShooter loop
 setInterval(function() {
 	try {

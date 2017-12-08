@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="theme-color" content="#309090" />
+<meta name="theme-color" content="#9c9eaf" />
 <link rel="icon" href="/client/icon.png">
 <title>JS Shooter</title>
 <style type="text/css">
@@ -34,18 +34,29 @@
 		overflow-y: hidden;
 		text-align: center;
 		position: absolute;
-		z-index: 2;
+		z-index: 10;
 		border:1px solid #000000;
 		bottom: 0;
 		right: 0;
 		left: 0;
 		height: 60px;
 		width: 100%;
-		transition: 1s;
+		transition: 1.5s;
+	}
+
+	#overlay {
+		overflow-y: hidden;
+		position: absolute;
+		z-index: 9;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 	}
 
 	#scoreDiv {
-		background-color: rgba(0,0,0,0.0);
 		overflow-y: hidden;
 		text-align: center;
 		position: absolute;
@@ -80,21 +91,31 @@
 		text-align: center;
 		font-size: 150%;
 	}
+	.noselect {
+		-webkit-touch-callout: none; /* iOS Safari */
+		-webkit-user-select: none; /* Safari */
+		-khtml-user-select: none; /* Konqueror HTML */
+		-moz-user-select: none; /* Firefox */
+		-ms-user-select: none; /* Internet Explorer/Edge */
+		user-select: none; /* Non-prefixed version, currentlysupported by Chrome and Opera */
+	}
 </style>
 </head>
 <body onmousemove="mouseMove(event);">
 <canvas id="ctx" width="1200" height="600"></canvas>
 
-<div id="scoreDiv"></div>
-<div id="death">
-	<div id="youaredead">
+<div id="overlay"></div>
+
+<div id="scoreDiv" class="noselect"></div>
+<div id="death" class="noselect">
+	<div id="youaredead" class="noselect">
 		You are dead
 	</div>
 	<br>
-	<div id="countdown">0
+	<div id="countdown" class="noselect">0
 	</div>
 </div>
-<div id="uiDiv">
+<div id="uiDiv" class="noselect">
 	<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
 	<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
 	<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
@@ -110,7 +131,7 @@
 	var scoreDiv = document.getElementById("scoreDiv");
 	var canvas = document.getElementById('ctx');
 	var ctx = canvas.getContext("2d");
-	ctx.font = "10px Arial";
+	ctx.font = "100px Arial";
 	ctx.textAlign="center";
 	ctx.fillStyle = "#BBBBBB";
 
@@ -120,7 +141,10 @@
 	for(var bgLineY = 0; bgLineY < 600; bgLineY+=20) {
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
+	ctx.fillStyle = "#000000";
+	ctx.fillText("No game data =(", 600, 300);
 
+	ctx.font = "10px Arial";
 	setTimeout(function() {
 		uiDiv.style.height = "0px";
 	}, 500);
