@@ -311,6 +311,12 @@ var Player = function(id) {
 		self.pressingDown = false;
 		self.hp = 10;
 		self.score = Math.round(self.score / 3);
+
+		if(self.doubleFireSpeed) self.score += 400;
+		if(self.quadrupleFireSpeed) self.score += 1600;
+		if(self.dualBullets) self.score += 1000;
+		if(self.quadrupleBullets) self.score += 1600;
+
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
