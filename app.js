@@ -63,7 +63,7 @@ var NPCShooter = function(id, x, y) {
 							dist[player.id] = d;
 						}
 					} else {
-						if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.dfs && player.qfs && player.dualBullets && player.quadrupleBullets) {
+						if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) {
 							var d = getDistance(self.x, self.y, player.x, player.y);
 							dist[player.id] = d;
 						}
@@ -180,9 +180,9 @@ var Bullet = function(id, ownerID, x, y, angle) {
 								if(player.hp <= 0) {
 									owner.score += 100;
 									owner.score += Math.floor(player.score / 4);
-									if(player.dfs)
+									if(player.doubleFireSpeed)
 										owner.score+=500;
-									if(player.qfs)
+									if(player.quadrupleFireSpeed)
 										owner.score+=2000;
 									if(player.dualBullets)
 										owner.score+=1250;
@@ -295,8 +295,8 @@ var Player = function(id) {
 		score:0,
 		maxSpd:3,
 		name:"Unnamed",
-		dfs:false,
-		qfs:false,
+		doubleFireSpeed:false,
+		quadrupleFireSpeed:false,
 		dualBullets:false,
 		quadrupleBullets:false,
 		upgHPPrice:500
@@ -314,8 +314,8 @@ var Player = function(id) {
 		self.maxHp = 10;
 		self.regen = -1;
 		self.maxSpd = 3;
-		self.dfs = false;
-		self.qfs = false;
+		self.doubleFireSpeed = false;
+		self.quadrupleFireSpeed = false;
 		self.dualBullets = false;
 		self.quadrupleBullets = false;
 		self.upgHPPrice = 500;
@@ -421,7 +421,7 @@ function countOPPlayers() {
 	var result = 0;
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
-		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.dfs && player.qfs && player.dualBullets && player.quadrupleBullets) {
+		if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) {
 			result++;
 		}
 	}
@@ -529,14 +529,14 @@ io.sockets.on("connection", function(socket) {
 	socket.on('upgFSpeedClicked',function(data){
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
-			if(!player.dfs) {
+			if(!player.doubleFireSpeed) {
 				if(player.score >= 2000) {
-					player.dfs = true;
+					player.doubleFireSpeed = true;
 					player.score-=2000;
 				}
-			} else if(!player.qfs) {
+			} else if(!player.quadrupleFireSpeed) {
 				if(player.score >= 8000) {
-					player.qfs = true;
+					player.quadrupleFireSpeed = true;
 					player.score-=8000;
 				}
 			}
@@ -584,7 +584,7 @@ setInterval(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-				if(player.dfs) {
+				if(player.doubleFireSpeed) {
 					player.fireBullet();
 				}
 			}
@@ -594,7 +594,7 @@ setInterval(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-				if(player.qfs) {
+				if(player.quadrupleFireSpeed) {
 					player.fireBullet();
 				}
 			}
@@ -604,7 +604,7 @@ setInterval(function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-				if(player.qfs) {
+				if(player.quadrupleFireSpeed) {
 					player.fireBullet();
 				}
 			}
@@ -612,20 +612,12 @@ setInterval(function() {
 	}, 200);
 }, 250);
 
-// Spawn blocks and player respawn cooldown
+// Spawn blocks
 setInterval(function() {
 	if(Object.keys(BLOCK_LIST).length < 30) {
 		spawnBlock();
 	}
-	try {
-		for(var p in PLAYER_LIST) {
-			var player = PLAYER_LIST[p];
-			if(!(player.spawnCooldown < 0)) {
-				player.spawnCooldown--;
-			}
-		}
-	}catch(err) {};
-}, 1000);
+}, 500);
 
 // Spawn attackers
 setInterval(function() {
@@ -636,11 +628,23 @@ setInterval(function() {
 	}
 }, 10000);
 
+// Player respawn cooldown
+setInterval(function() {
+	try {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(!(player.spawnCooldown < 0)) {
+				player.spawnCooldown--;
+			}
+		}
+	}catch(err) {};
+}, 1000);
+
 // Spawn shooters
 setInterval(function() {
-	var r = 15;
+	var r = 20;
 	if(countOPPlayers() > 0) {
-		r = 5;
+		r = 4;
 	}
 	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * r) == 1) {
 		if(countActivePlayers() > 0) {
@@ -754,8 +758,8 @@ setInterval(function() {
 				socket.emit("price", {
 					upgHP:player.upgHPPrice,
 					score:player.score,
-					dfs:player.dfs,
-					qfs:player.qfs,
+					doubleFireSpeed:player.doubleFireSpeed,
+					quadrupleFireSpeed:player.quadrupleFireSpeed,
 					quadrupleBullets:player.quadrupleBullets,
 					dualBullets:player.dualBullets
 				});
