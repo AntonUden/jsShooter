@@ -664,7 +664,7 @@ setInterval(function() {
 	if(countActivePlayers() < 1) {
 		for(var s in NPCSHOOTER_LIST) {
 			var sh = NPCSHOOTER_LIST[s];
-			if(Math.floor(Math.random() * 10) == 1) {
+			if(Math.floor(Math.random() * 30) == 1) {
 				sh.hp = 0;
 				break;
 			}
