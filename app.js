@@ -276,8 +276,8 @@ var NPCBlock = function(id) {
 // Player object
 var Player = function(id) {
 	var self = {
-		x:Math.floor(Math.random() * 1180) + 10,
-		y:Math.floor(Math.random() * 580) + 10,
+		x:Math.floor(Math.random() * 1160) + 20,
+		y:Math.floor(Math.random() * 560) + 20,
 		id:id,
 		spawnCooldown:-1,
 		afkKickTimeout:100,
@@ -303,8 +303,8 @@ var Player = function(id) {
 	}
 
 	self.respawn = function() {
-		self.x = Math.floor(Math.random() * 1200);
-		self.y = Math.floor(Math.random() * 600);
+		self.x = Math.floor(Math.random() * 1160) + 20;
+		self.y = Math.floor(Math.random() * 560) + 20;
 		self.pressingRight = false;
 		self.pressingLeft = false;
 		self.pressingUp = false;
