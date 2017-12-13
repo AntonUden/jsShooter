@@ -23,11 +23,11 @@
 	</div>
 </div>
 <div id="uiDiv" class="noselect">
-	<button onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
-	<button onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
-	<button onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
+	<button class="shadow" onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+	<button class="shadow" onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+	<button class="shadow" onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button><br>
 	<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
-	<button id="setName" onclick="changeName()">Set name</button>
+	<button class="shadow" id="setName" onclick="changeName()">Set name</button>
 	<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
 </div>
 
@@ -111,13 +111,13 @@
 	function mouseMove(e) {
 		mx = Math.round(e.clientX / window.innerWidth * 1200);
 		my = Math.round(e.clientY / window.innerHeight * 600);
-		if(e.clientY < window.innerHeight - 60 && uiVisible) {
+		if(e.clientY < window.innerHeight - 70 && uiVisible) {
 			uiVisible = false;
 			unfocus();
 			uiDiv.style.height = "0px";
 		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
 			uiVisible = true;
-			uiDiv.style.height = "50px";
+			uiDiv.style.height = "55px";
 		}
 	}
 
