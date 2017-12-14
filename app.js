@@ -646,7 +646,7 @@ setInterval(function() {
 	}catch(err) {};
 }, 1000);
 
-// Spawn shooters
+// Spawn and despawn shooters
 setInterval(function() {
 	var r = 20;
 	if(countOPPlayers() > 0) {
@@ -657,10 +657,6 @@ setInterval(function() {
 			spawnShooter();
 		}
 	}
-}, 1000);
-
-// Despawn shooters
-setInterval(function() {
 	if(countActivePlayers() < 1) {
 		for(var s in NPCSHOOTER_LIST) {
 			var sh = NPCSHOOTER_LIST[s];
