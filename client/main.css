@@ -53,7 +53,7 @@ html {
 	right: 0;
 	left: 0;
 	height: 0px;
-	width: 70px;
+	width: 100%;
 	transition: 1s;
 	transition-timing-function: ease-in-out;
 }
