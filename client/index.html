@@ -220,7 +220,8 @@
 			if(data.players[i].spawnCooldown < 0) {
 				ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
 				ctx.fillStyle = "#000000";
-				ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 16);
+				ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 20);
+				ctx.fillText(data.players[i].hp + " HP", data.players[i].x, data.players[i].y - 8);
 			}
 		}
 		for(var i = 0; i < data.bullets.length; i++) {
