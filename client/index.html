@@ -22,6 +22,9 @@
 	<div id="countdown" class="noselect">0
 	</div>
 </div>
+<div id=menuTextDiv>
+	Menu
+</div>
 <div id="uiDiv" class="noselect">
 	<button class="shadow" onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
 	<button class="shadow" onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
@@ -54,6 +57,7 @@
 	ctx.font = "10px Arial";
 	setTimeout(function() {
 		uiDiv.style.height = "0px";
+		document.getElementById("menuTextDiv").style.height = "20px";
 	}, 500);
 
 	var socket = io();
@@ -115,8 +119,10 @@
 			uiVisible = false;
 			unfocus();
 			uiDiv.style.height = "0px";
+			document.getElementById("menuTextDiv").style.height = "20px";
 		} else if(e.clientY > window.innerHeight - 40 && !uiVisible) {
 			uiVisible = true;
+			document.getElementById("menuTextDiv").style.height = "0px";
 			uiDiv.style.height = "55px";
 		}
 	}
