@@ -44,6 +44,7 @@
 	var scoreDiv = document.getElementById("scoreDiv");
 	var canvas = document.getElementById('ctx');
 	var ctx = canvas.getContext("2d");
+	var clickCooldown = 0;
 	ctx.font = "100px Arial";
 	ctx.textAlign="center";
 	ctx.fillStyle = "#FFFFFF";
@@ -90,19 +91,25 @@
 	}
 
 	function upgradeHP() {
-		setTimeout(function() {
-			socket.emit("upgHPClicked");
-		}, 100);
+		if(clickCooldown < 1) {
+			clickCooldown = 1;
+			setTimeout(function() {
+				socket.emit("upgHPClicked");
+			}, 100);
+		}
 	} 
 
 	function changeName() {
-		var name = "" + document.getElementById("nameInput").value;
-		if(name == "") {
-			name = "Unnamed";
+		if(clickCooldown < 1) {
+			clickCooldown = 1;
+			var name = "" + document.getElementById("nameInput").value;
+			if(name == "") {
+				name = "Unnamed";
+			}
+			console.log("changing name to " + name);
+			socket.emit("changeName", {name:name});
+			document.getElementById("nameInput").value = name;
 		}
-		console.log("changing name to " + name);
-		socket.emit("changeName", {name:name});
-		document.getElementById("nameInput").value = name;
 	}
 
 	function dualBullets() {
@@ -299,6 +306,14 @@
 			document.getElementById("death").style.display = 'none';
 		}		
 	});
+
+	setInterval(function()) {
+		if(clickCooldown > 0) {
+			clickCooldown--;
+		} else {
+			clickCooldown = -1;
+		}
+	}, 50);
 
 	// Sends mouse position to the server 20 times per second
 	setInterval(function() {
