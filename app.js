@@ -495,6 +495,7 @@ io.sockets.on("connection", function(socket) {
 	socket.on('changeName', function(data) {
 		try {
 			var player = getPlayerByID(socket.id);
+			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
 			player.name = data.name;
 		} catch(err) {
 			
