@@ -295,7 +295,7 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
-		score:999999999990,
+		score:0,
 		maxSpd:3,
 		name:"Unnamed",
 		doubleFireSpeed:false,
