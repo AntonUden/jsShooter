@@ -36,7 +36,7 @@ var NPCShooter = function(id, x, y) {
 	}
 
 	if(countOPPlayers() > 0) {
-		self.hp = 5;
+		self.hp = 10;
 	}
 
 	self.fireBullet = function() {
