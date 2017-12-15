@@ -113,21 +113,30 @@
 	}
 
 	function dualBullets() {
-		setTimeout(function() {
-			socket.emit("upgDualBullets");
-		}, 100);
+		if(clickCooldown < 1) {
+			clickCooldown = 1;
+			setTimeout(function() {
+				socket.emit("upgDualBullets");
+			}, 100);
+		}
 	}
 
 	function upgradeBulletSize() {
-		setTimeout(function() {
-			socket.emit("upgBulletSize");
-		}, 100);
+		if(clickCooldown < 1) {
+			clickCooldown = 1;
+			setTimeout(function() {
+				socket.emit("upgBulletSize");
+			}, 100);
+		}
 	}
 
 	function doubleFireSpeed() {
-		setTimeout(function() {
-			socket.emit("upgFSpeedClicked");
-		}, 100);
+		if(clickCooldown < 1) {
+			clickCooldown = 1;
+			setTimeout(function() {
+				socket.emit("upgFSpeedClicked");
+			}, 100);
+		}
 	}
 
 	function mouseMove(e) {
@@ -307,6 +316,7 @@
 		}		
 	});
 
+	// Spam protection
 	setInterval(function() {
 		if(clickCooldown > 0) {
 			clickCooldown--;
