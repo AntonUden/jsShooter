@@ -29,6 +29,7 @@
 	<button class="shadow" onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
 	<button class="shadow" onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
 	<button class="shadow" onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button>
+	<button class="shadow" onclick="upgradeBulletSize()" disabled="true" id="upgradeBulletSize">Upgrade bullet size (5000)</button>
 	<input type="checkbox" id="mlock">Lock menu
 	<br>
 	<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
@@ -108,6 +109,12 @@
 		}, 100);
 	}
 
+	function upgradeBulletSize() {
+		setTimeout(function() {
+			socket.emit("upgBulletSize");
+		}, 100);
+	}
+
 	function doubleFireSpeed() {
 		setTimeout(function() {
 			socket.emit("upgFSpeedClicked");
@@ -143,7 +150,7 @@
 	socket.on("price", function(data) {
 		upgHP = data.upgHP;
 		document.getElementById("upgradehp").innerHTML = "Upgrade HP (" + upgHP + ")";
-		if(data.score >= upgHP) {
+		if(data.score >= upgHP && !dead) {
 			document.getElementById("upgradehp").disabled = false;
 		} else {
 			document.getElementById("upgradehp").disabled = true;
@@ -155,7 +162,7 @@
 				document.getElementById("upgradefs").disabled = true;
 			} else {
 				document.getElementById("upgradefs").innerHTML = "Quadruple fire speed (8000)";
-				if(data.score >= 8000) {
+				if(data.score >= 8000 && !dead) {
 					document.getElementById("upgradefs").disabled = false;
 				} else {
 					document.getElementById("upgradefs").disabled = true;
@@ -163,13 +170,25 @@
 			}
 		} else {
 			document.getElementById("upgradefs").innerHTML = "Double fire speed (2000)";
-			if(data.score >= 2000) {
+			if(data.score >= 2000 && !dead) {
 				document.getElementById("upgradefs").disabled = false;
 			} else {
 				document.getElementById("upgradefs").disabled = true;
 			}
 		}
-		//quadruple
+		
+
+		if(data.doubleBulletSize) {
+			document.getElementById("upgradeBulletSize").disabled = true;
+			document.getElementById("upgradeBulletSize").innerHTML = "Upgrade bullet size";
+		} else {
+			document.getElementById("upgradeBulletSize").innerHTML = "Upgrade bullet size (5000)";
+			if(data.score >= 5000 && !dead) {
+				document.getElementById("upgradeBulletSize").disabled = false;
+			} else {
+				document.getElementById("upgradeBulletSize").disabled = true;
+			}
+		}
 
 		if(data.dualBullets == true) {
 			if(data.quadrupleBullets) {
@@ -178,7 +197,7 @@
 			} else {
 				document.getElementById("upgradedb").disabled = true;
 				document.getElementById("upgradedb").innerHTML = "Quadruple bullets (8000)";
-				if(data.score >= 8000) {
+				if(data.score >= 8000 && !dead) {
 					document.getElementById("upgradedb").disabled = false;
 				} else {
 					document.getElementById("upgradedb").disabled = true;
@@ -186,7 +205,7 @@
 			}
 		} else {
 			document.getElementById("upgradedb").innerHTML = "Dual bullets (5000)";
-			if(data.score >= 5000) {
+			if(data.score >= 5000 && !dead) {
 				document.getElementById("upgradedb").disabled = false;
 			} else {
 				document.getElementById("upgradedb").disabled = true;
@@ -229,7 +248,9 @@
 		for(var i = 0; i < data.bullets.length; i++) {
 			ctx.fillStyle = "#000000";
 			ctx.beginPath();
-			ctx.arc(data.bullets[i].x - 2,data.bullets[i].y - 2, 2, 0, Math.PI*2, true); 
+			var renderSize = 2;
+			if(data.bullets[i].size > 1) renderSize = 3;
+			ctx.arc(data.bullets[i].x - (renderSize / 2), data.bullets[i].y - (renderSize / 2), renderSize, 0, Math.PI*2, true); 
 			ctx.closePath();
 			ctx.fill();
 		}
