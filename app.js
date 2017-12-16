@@ -4,7 +4,6 @@ var serv = require('http').Server(app);
 var colors = require('colors/safe');
 
 console.log(colors.green("[jsShooter] Starting server..."));
-
 app.get('/',function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
 });
@@ -23,6 +22,7 @@ var BULLET_LIST = {};
 var BLOCK_LIST = {};
 var ATTACKER_LIST = {};
 var NPCSHOOTER_LIST = {};
+var POWERUP_LIST = {};
 
 // Npc shooter object
 var NPCShooter = function(id, x, y) {
@@ -174,7 +174,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 				if (self.x >= (player.x - 8) - extraSize && self.x <= player.x + 8 + extraSize) {
 					if (self.y >= (player.y - 8) - extraSize && self.y <= player.y + 8) {
 						if(!(self.owner == player.id)) {
-							player.hp--;
+							if(!(player.powerupTime > 0)) player.hp--;
 							var owner = getPlayerByID(self.owner);
 							if(!(owner == undefined)) {
 								owner.score += 10;
@@ -295,6 +295,7 @@ var Player = function(id) {
 		afk:false,
 		mx:0,
 		my:0,
+		powerupTime:-1,
 		score:0,
 		maxSpd:3,
 		name:"Unnamed",
@@ -314,6 +315,7 @@ var Player = function(id) {
 		self.pressingUp = false;
 		self.pressingDown = false;
 		self.hp = 10;
+		self.powerupTime = -1;
 		self.score = Math.round(self.score / 3);
 
 		if(self.doubleFireSpeed) self.score += 400;
@@ -381,6 +383,32 @@ var Player = function(id) {
 			}
 		}
 	}
+	return self;
+}
+
+//Powerup object
+var PowerUp = function(x, y, id) {
+	var self = {
+		x:x,
+		y:y,
+		id:id
+	};
+
+	self.update = function() {
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(getDistance(self.x, self.y, player.x, player.y) < 10) {
+				player.powerupTime += 20;
+				self.destroy();
+			}
+		}
+	}
+
+	self.destroy = function() {
+		delete POWERUP_LIST[self.id];
+		delete self;
+	}
+
 	return self;
 }
 
@@ -664,6 +692,11 @@ setInterval(function() {
 			if(!(player.spawnCooldown < 0)) {
 				player.spawnCooldown--;
 			}
+			if(player.powerupTime > 0) {
+				player.powerupTime--;
+			} else {
+				player.powerupTime = -1;
+			}
 		}
 	}catch(err) {};
 }, 1000);
@@ -775,6 +808,7 @@ setInterval(function() {
 		var blockPack = [];
 		var shooterPack = [];
 		var attackerPack = [];
+		var powerupPack = [];
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			player.update();
@@ -817,6 +851,16 @@ setInterval(function() {
 			});
 		}
 
+		for(var pu in POWERUP_LIST) {
+			var powerup = POWERUP_LIST[pu];
+			powerup.update();
+			powerupPack.push({
+				x:powerup.x,
+				y:powerup.y,
+				id:powerup.id
+			});
+		}
+
 		for(var bl in BLOCK_LIST) {
 			var block = BLOCK_LIST[bl];
 			blockPack.push({
@@ -850,6 +894,7 @@ setInterval(function() {
 			var socket = SOCKET_LIST[i];
 			socket.emit("newPositions", {
 				players:playerPack,
+				powerups:powerupPack,
 				bullets:bulletPack,
 				blocks:blockPack,
 				attackers:attackerPack,
@@ -875,4 +920,5 @@ setInterval(function() {
 for(var spBlock = 0; spBlock < 20; spBlock++) {
 	spawnBlock();
 }
+POWERUP_LIST[1337] = PowerUp(400, 400, 1337);
 console.log(colors.green("[jsShooter] Server started "));

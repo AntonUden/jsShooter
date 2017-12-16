@@ -263,6 +263,10 @@
 				ctx.fillText(data.players[i].hp + " HP", data.players[i].x, data.players[i].y - 8);
 			}
 		}
+		for(var i = 0; i < data.powerups.length; i++) {
+			ctx.fillStyle = "#FF44FF";
+			ctx.fillRect(data.powerups[i].x - 6, data.powerups[i].y - 6, 12, 12);
+		}
 		for(var i = 0; i < data.bullets.length; i++) {
 			ctx.fillStyle = "#000000";
 			ctx.beginPath();
