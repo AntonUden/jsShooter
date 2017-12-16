@@ -264,6 +264,13 @@
 			}
 		}
 		for(var i = 0; i < data.powerups.length; i++) {
+			ctx.strokeStyle = "blue";
+			ctx.beginPath();
+			ctx.arc(data.powerups[i].x, data.powerups[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2*Math.PI);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.arc(data.powerups[i].x, data.powerups[i].y, 10 + (Math.cos(new Date().getTime() / 500) * 5), 0, 2*Math.PI);
+			ctx.stroke();
 			ctx.fillStyle = "#FF44FF";
 			ctx.fillRect(data.powerups[i].x - 6, data.powerups[i].y - 6, 12, 12);
 		}
