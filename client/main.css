@@ -73,7 +73,6 @@ html {
 #scoreDiv {
 	overflow-y: hidden;
 	text-align: center;
-	position: absolute;
 	z-index: 2;
 	position: absolute;
 	top:10px;
@@ -111,6 +110,26 @@ html {
 	font-size: 150%;
 }
 
+#powerupCountdown {
+	visibility: hidden;
+	white-space: nowrap;
+	text-align: center;
+	position: absolute;
+	top:30px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	color: black;
+	font-size: 200%;
+	display: inline-block;
+}
+
+#powerupCountdownTimer {
+	display: inline-block;
+	white-space: nowrap;
+}
+
 .shadow {
 	transition: 1s;
 }
@@ -128,19 +147,23 @@ html {
 	-ms-user-select: none; /* Internet Explorer/Edge */
 	user-select: none; /* Non-prefixed version, currentlysupported by Chrome and Opera */
 }
+
 a {
 	transition: 1s;
 	transition-timing-function: ease-in-out;
 	color:#1337FF; /* unvisited link */
 }
+
 a:visited {
 	color:#1337FF; /* visited link */
 }
+
 a:hover {
 	transition: 1s;
 	transition-timing-function: ease-in-out;
 	color:#11FFBB; /* mouse over link */
 }
+
 a:active {
 	color:#1337FF;
 }

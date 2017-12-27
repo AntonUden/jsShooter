@@ -356,6 +356,11 @@ var Player = function(id) {
 	}
 
 	self.update = function() {
+		if(self.powerupTime > 0) {
+			self.maxSpd = 6;
+		} else {
+			self.maxSpd = 3;
+		}
 		if(self.hp <= 0) {
 			self.respawn();
 			return;
@@ -399,6 +404,7 @@ var PowerUp = function(x, y, id) {
 			var player = PLAYER_LIST[p];
 			if(getDistance(self.x, self.y, player.x, player.y) < 10) {
 				player.powerupTime += 20;
+				player.score += 500;
 				self.destroy();
 			}
 		}
@@ -627,7 +633,6 @@ io.sockets.on("connection", function(socket) {
 		} catch(err) {
 		}
 	});
-
 });
 
 // Bullet fire loop
@@ -732,7 +737,7 @@ setInterval(function() {
 				for(var p in PLAYER_LIST) {
 					var player = PLAYER_LIST[p];
 
-					if(getDistance(a.x, a.y, player.x, player.y) < 10) {
+					if(getDistance(a.x, a.y, player.x, player.y) < 10 && player.powerupTime < 1) {
 						player.hp --;
 						if(player.hp <= 0) {
 							a.hp = 10;
@@ -767,6 +772,20 @@ setInterval(function() {
 	for(var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
 		socket.emit("afk?", {});
+	}
+}, 1000);
+
+// Powerup spawn loop
+setInterval(function() {
+	if(!(Object.keys(POWERUP_LIST).length > 0)) {
+		if(Math.floor(Math.random() * 150) == 1) {
+			if(countActivePlayers() > 0) {
+				var sID = Math.random();
+				var x = Math.floor(Math.random() * 1180) + 10;
+				var y = Math.floor(Math.random() * 580) + 10;
+				POWERUP_LIST[sID] = PowerUp(x, y, sID);
+			}
+		}
 	}
 }, 1000);
 
@@ -823,6 +842,7 @@ setInterval(function() {
 					maxHp:player.maxHp,
 					score:player.score,
 					id:player.id,
+					powerupTime:player.powerupTime,
 					spawnCooldown:player.spawnCooldown
 				});
 				var socket = SOCKET_LIST[p];
@@ -906,7 +926,7 @@ setInterval(function() {
 	}
 },(1000 / fps));
 
-// Error correcting code loop
+// Error correcting loop
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
@@ -920,5 +940,4 @@ setInterval(function() {
 for(var spBlock = 0; spBlock < 20; spBlock++) {
 	spawnBlock();
 }
-POWERUP_LIST[1337] = PowerUp(400, 400, 1337);
 console.log(colors.green("[jsShooter] Server started "));
