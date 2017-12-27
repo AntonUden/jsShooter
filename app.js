@@ -43,7 +43,6 @@ var NPCShooter = function(id, x, y) {
 		try {
 			var bID = Math.random() * 200;
 			var target = PLAYER_LIST[self.targetPlayer];
-			console.log(self.targetPlayer);
 			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI, 1);
 		} catch(error) {
 
@@ -297,7 +296,7 @@ var Player = function(id) {
 		mx:0,
 		my:0,
 		powerupTime:-1,
-		score:085678,
+		score:0,
 		maxSpd:3,
 		name:"Unnamed",
 		doubleFireSpeed:false,
