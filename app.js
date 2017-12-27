@@ -43,6 +43,7 @@ var NPCShooter = function(id, x, y) {
 		try {
 			var bID = Math.random() * 200;
 			var target = PLAYER_LIST[self.targetPlayer];
+			console.log(self.targetPlayer);
 			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI, 1);
 		} catch(error) {
 
@@ -63,7 +64,7 @@ var NPCShooter = function(id, x, y) {
 							dist[player.id] = d;
 						}
 					} else {
-						if(player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) {
+						if(isOP(player)) {
 							var d = getDistance(self.x, self.y, player.x, player.y);
 							dist[player.id] = d;
 						}
@@ -296,7 +297,7 @@ var Player = function(id) {
 		mx:0,
 		my:0,
 		powerupTime:-1,
-		score:0,
+		score:085678,
 		maxSpd:3,
 		name:"Unnamed",
 		doubleFireSpeed:false,
@@ -465,11 +466,19 @@ function countActivePlayers() {
 	return result;
 }
 
+function isOP(player) {
+	if((player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) || (player.doubleFireSpeed && player.dualBullets && player.doubleBulletSize)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function countOPPlayers() {
 	var result = 0;
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
-		if((player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) || (player.doubleFireSpeed && player.dualBullets && player.doubleBulletSize)) {
+		if(isOP(player)) {
 			result++;
 		}
 	}
