@@ -466,7 +466,27 @@ function countActivePlayers() {
 }
 
 function isOP(player) {
-	if((player.joinKickTimeout < 0 && player.spawnCooldown < 0 && player.doubleFireSpeed && player.quadrupleFireSpeed && player.dualBullets && player.quadrupleBullets) || (player.doubleFireSpeed && player.dualBullets && player.doubleBulletSize)) {
+	var power = 0;
+	if(!(player.joinKickTimeout < 0 && player.spawnCooldown < 0)) {
+		power = -9000;
+	}
+	if(player.doubleFireSpeed) {
+		power++;
+	}
+	if(player.quadrupleFireSpeed) {
+		power++;
+	}
+	if(player.doubleBulletSize) {
+		power++;
+	}
+	if(player.quadrupleFireSpeed) {
+		power++;
+	}
+	if(player.doubleBulletSize) {
+		power++;
+	}
+
+	if(power > 3) {
 		return true;
 	} else {
 		return false;
