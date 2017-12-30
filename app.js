@@ -708,18 +708,17 @@ setInterval(function() {
 	}
 }, 500);
 
-// Spawn attackers
-setInterval(function() {
-	if(Object.keys(ATTACKER_LIST).length < 3) {
-		if(countActivePlayers() > 0) {
-			spawnAttacker();
-		}
-	}
-}, 10000);
-
-// Player respawn cooldown
+// Spawn / despawn / afk test loop
 setInterval(function() {
 	try {
+		// Spawn attackers
+		if(Object.keys(ATTACKER_LIST).length < 3) {
+			if(countActivePlayers() > 0) {
+				spawnAttacker();
+			}
+		}
+
+		// Player respawn cooldown
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(!(player.spawnCooldown < 0)) {
@@ -731,34 +730,28 @@ setInterval(function() {
 				player.powerupTime = -1;
 			}
 		}
-	}catch(err) {};
-}, 1000);
 
-// Spawn and despawn shooters
-setInterval(function() {
-	var r = 20;
-	if(countOPPlayers() > 0) {
-		r = 4;
-	}
-	if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * r) == 1) {
-		if(countActivePlayers() > 0) {
-			spawnShooter();
+		// Spawn and despawn shooters
+		var r = 20;
+		if(countOPPlayers() > 0) {
+			r = 4;
 		}
-	}
-	if(countActivePlayers() < 1) {
-		for(var s in NPCSHOOTER_LIST) {
-			var sh = NPCSHOOTER_LIST[s];
-			if(Math.floor(Math.random() * 30) == 1) {
-				sh.hp = 0;
-				break;
+		if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * r) == 1) {
+			if(countActivePlayers() > 0) {
+				spawnShooter();
 			}
 		}
-	}
-}, 1000);
+		if(countActivePlayers() < 1) {
+			for(var s in NPCSHOOTER_LIST) {
+				var sh = NPCSHOOTER_LIST[s];
+				if(Math.floor(Math.random() * 30) == 1) {
+					sh.hp = 0;
+					break;
+				}
+			}
+		}
 
-// NPCAttacker and NPCShooter loop
-setInterval(function() {
-	try {
+		// Attacker and shooter loop
 		for(var na in ATTACKER_LIST) {
 			var a = ATTACKER_LIST[na];
 			if(!a.activationTimer > 0) {
@@ -790,32 +783,34 @@ setInterval(function() {
 				}
 			}, 500);
 		}
-	} catch(er) {
-		console.log(er);
-	}
-}, 1000);
+		
+		// AFK Test loop
+		for(var i in SOCKET_LIST) {
+			var socket = SOCKET_LIST[i];
+			socket.emit("afk?", {});
+		}
 
-// AFK Test loop
-setInterval(function() {
-	for(var i in SOCKET_LIST) {
-		var socket = SOCKET_LIST[i];
-		socket.emit("afk?", {});
-	}
-}, 1000);
-
-// Powerup spawn loop
-setInterval(function() {
-	if(!(Object.keys(POWERUP_LIST).length > 0)) {
-		if(Math.floor(Math.random() * 150) == 1) {
-			if(countActivePlayers() > 0) {
-				var sID = Math.random();
-				var x = Math.floor(Math.random() * 1180) + 10;
-				var y = Math.floor(Math.random() * 580) + 10;
-				POWERUP_LIST[sID] = PowerUp(x, y, sID);
+		// Powerup spawn
+		if(!(Object.keys(POWERUP_LIST).length > 0)) {
+			if(Math.floor(Math.random() * 150) == 1) {
+				if(countActivePlayers() > 0) {
+					var sID = Math.random();
+					var x = Math.floor(Math.random() * 1180) + 10;
+					var y = Math.floor(Math.random() * 580) + 10;
+					POWERUP_LIST[sID] = PowerUp(x, y, sID);
+				}
 			}
 		}
-	}
-}, 1000);
+
+		// Check players hp
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			if(player.hp > player.maxHp) {
+				player.hp = player.maxHp;
+			}
+		}
+	} catch(err) {};
+}, 10000);
 
 // Regen and kick loop
 setInterval(function() {
@@ -953,16 +948,6 @@ setInterval(function() {
 		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
 	}
 },(1000 / fps));
-
-// Error correcting loop
-setInterval(function() {
-	for(var p in PLAYER_LIST) {
-		var player = PLAYER_LIST[p];
-		if(player.hp > player.maxHp) {
-			player.hp = player.maxHp;
-		}
-	}
-}, 5000);
 
 //Spawn 20 block at start
 for(var spBlock = 0; spBlock < 20; spBlock++) {
