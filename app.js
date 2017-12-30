@@ -105,6 +105,7 @@ var NPCAttacker = function(id, x, y) {
 		x:x,
 		y:y,
 		targetPlayer:-1,
+		attackCooldown:-1,
 		hp:5,
 		activationTimer:100
 	}
@@ -141,6 +142,24 @@ var NPCAttacker = function(id, x, y) {
 
 			} catch(err) {
 
+			}
+		}
+		if(self.attackCooldown > 0) {
+			self.attackCooldown--;
+		} else {
+			if(!self.activationTimer > 0) {
+				if(countActivePlayers() > 0) {
+					for(var p in PLAYER_LIST) {
+						var player = PLAYER_LIST[p];
+						if(getDistance(self.x, self.y, player.x, player.y) < 10 && player.powerupTime < 1) {
+							player.hp --;
+							self.attackCooldown = (1000 / fps) * 1;
+							if(player.hp <= 0) {
+								a.hp = 10;
+							}
+						}
+					}
+				}
 			}
 		}
 		if(self.hp <= 0) {
@@ -751,22 +770,7 @@ setInterval(function() {
 			}
 		}
 
-		// Attacker and shooter loop
-		for(var na in ATTACKER_LIST) {
-			var a = ATTACKER_LIST[na];
-			if(!a.activationTimer > 0) {
-				for(var p in PLAYER_LIST) {
-					var player = PLAYER_LIST[p];
-
-					if(getDistance(a.x, a.y, player.x, player.y) < 10 && player.powerupTime < 1) {
-						player.hp --;
-						if(player.hp <= 0) {
-							a.hp = 10;
-						}
-					}
-				}
-			}
-		}
+		// Shooter loop
 		for(var s in NPCSHOOTER_LIST) {
 			var sh = NPCSHOOTER_LIST[s];
 			if(sh.targetPlayer > 0) {
@@ -792,7 +796,7 @@ setInterval(function() {
 
 		// Powerup spawn
 		if(!(Object.keys(POWERUP_LIST).length > 0)) {
-			if(Math.floor(Math.random() * 150) == 1) {
+			if(Math.floor(Math.random() * 200) == 1) {
 				if(countActivePlayers() > 0) {
 					var sID = Math.random();
 					var x = Math.floor(Math.random() * 1180) + 10;
