@@ -810,7 +810,7 @@ setInterval(function() {
 			}
 		}
 	} catch(err) {};
-}, 10000);
+}, 1000);
 
 // Regen and kick loop
 setInterval(function() {
