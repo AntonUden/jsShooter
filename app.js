@@ -712,7 +712,7 @@ setInterval(function() {
 setInterval(function() {
 	try {
 		// Spawn attackers
-		if(Object.keys(ATTACKER_LIST).length < 3) {
+		if(Object.keys(ATTACKER_LIST).length < 3 && Math.floor(Math.random() * 4) == 1) {
 			if(countActivePlayers() > 0) {
 				spawnAttacker();
 			}
