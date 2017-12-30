@@ -154,9 +154,6 @@ var NPCAttacker = function(id, x, y) {
 						if(getDistance(self.x, self.y, player.x, player.y) < 10 && player.powerupTime < 1) {
 							player.hp --;
 							self.attackCooldown = (1000 / fps) * 1;
-							if(player.hp <= 0) {
-								a.hp = 10;
-							}
 						}
 					}
 				}
