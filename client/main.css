@@ -42,6 +42,12 @@ html {
 	transition: 1s;
 }
 
+#menuTextDiv:hover {
+	background-color: rgba(230,255,230,0.8);
+	transition: 1s;
+	transition-timing-function: ease-in-out;
+}
+
 #menuTextDiv {
 	background-color: rgba(255,255,255,0.2);
 	overflow-y: hidden;

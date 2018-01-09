@@ -5,8 +5,6 @@
 <link rel="icon" href="/client/icon.png">
 <title>JS Shooter</title>
 <link rel="stylesheet" type="text/css" href="/client/main.css">
-<style type="text/css">
-</style>
 </head>
 <body onmousemove="mouseMove(event);">
 <canvas id="ctx" width="1200" height="600"></canvas>
@@ -66,7 +64,9 @@
 	}
 	ctx.fillStyle = "#000000";
 	ctx.fillText("No game data =(", 600, 300);
-
+	ctx.font = "30px Arial";
+	ctx.fillText("Try reloading the page.", 600, 330);
+	
 	ctx.font = "10px Arial";
 	setTimeout(function() {
 		uiDiv.style.height = "0px";
