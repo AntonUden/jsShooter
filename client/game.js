@@ -334,14 +334,14 @@ setInterval(function() {
     }
 }, 50);
 
-// Sends mouse position to the server 20 times per second
+// Sends mouse position to the server 30 times per second
 setInterval(function() {
     var pack = {
         x: mx,
         y: my
     };
     socket.emit('mouseMove', pack);
-}, 50);
+}, 33);
 
 setInterval(function() {
     shooter_blink = !shooter_blink;
