@@ -969,6 +969,10 @@ process.stdin.on('data', function (text) {
 		for(var s in SOCKET_LIST) {
 			delete SOCKET_LIST[s];
 		}
+	} else if(text.trim().toLowerCase() == "help") {
+		console.log(colors.yellow("help          show help"));
+		console.log(colors.yellow("exit          stops the server"));
+		console.log(colors.yellow("kickall       kick all players"));
 	}
 });
 
