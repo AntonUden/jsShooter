@@ -958,9 +958,17 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function (text) {
-	if (text.trim() === 'exit') {
+	if (text.trim().toLowerCase() === 'exit') {
 		console.log(colors.yellow("Closing server"));
 		process.exit();
+	} else if(text.trim().toLowerCase() == "kickall") {
+		console.log(colors.yellow("Kicking all players"));
+		for(var p in PLAYER_LIST) {
+			delete PLAYER_LIST[p];
+		}
+		for(var s in SOCKET_LIST) {
+			delete SOCKET_LIST[s];
+		}
 	}
 });
 
