@@ -954,4 +954,15 @@ setInterval(function() {
 for(var spBlock = 0; spBlock < 20; spBlock++) {
 	spawnBlock();
 }
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (text) {
+	if (text.trim() === 'exit') {
+		console.log(colors.yellow("Closing server"));
+		process.exit();
+	}
+});
+
+
 console.log(colors.green("[jsShooter] Server started "));
