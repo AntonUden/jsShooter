@@ -957,11 +957,44 @@ for(var spBlock = 0; spBlock < 20; spBlock++) {
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
+function getCommand(text) {
+	var command = "";
+	for(var i = 0; i < text.length; i++) {
+		if(text.charAt(i) == ' ') {
+			i = text.length;
+		} else {
+			command += text.charAt(i);
+		}
+	}
+	return command.toLowerCase();
+}
+
+function getArgs(text) {
+	var args = [];
+	var arg = "";
+	var j = false;
+	text += " ";
+	for(var i = 0; i < text.length; i++) {
+		if(text.charAt(i) == ' ') {
+			if(!j) {
+				j = true;
+			} else {
+				args.push(arg);
+			}
+			arg = "";
+		} else {
+			arg += text.charAt(i);
+		}
+	}
+	return args;
+}
+
 process.stdin.on('data', function (text) {
-	if (text.trim().toLowerCase() === 'exit') {
+	var command = getCommand(text.trim());
+	if (command === 'exit') {
 		console.log(colors.yellow("Closing server"));
 		process.exit();
-	} else if(text.trim().toLowerCase() == "kickall") {
+	} else if(command == "kickall") {
 		console.log(colors.yellow("Kicking all players"));
 		for(var p in PLAYER_LIST) {
 			delete PLAYER_LIST[p];
@@ -969,10 +1002,36 @@ process.stdin.on('data', function (text) {
 		for(var s in SOCKET_LIST) {
 			delete SOCKET_LIST[s];
 		}
-	} else if(text.trim().toLowerCase() == "help") {
-		console.log(colors.yellow("help          show help"));
-		console.log(colors.yellow("exit          stops the server"));
-		console.log(colors.yellow("kickall       kick all players"));
+	} else if(command == "list") {
+		console.log(colors.yellow(Object.keys(PLAYER_LIST).length + " Players online"));
+		for(var p in PLAYER_LIST) {
+			var player = PLAYER_LIST[p];
+			console.log(colors.yellow("Name: " + player.name + " | Score:" + player.score + " | ID:" + p + " | X: " + player.x + " | X: " + player.y));
+		}
+	} else if(command == "kick") {
+		var args = getArgs(text.trim());
+		if(args.length > 0) {
+			var id = parseFloat(args[0]);
+			if(id > 0) {
+				if(PLAYER_LIST[id] != undefined) {
+					console.log(colors.yellow("Kicked player with id " + id));
+					delete PLAYER_LIST[id];
+					delete SOCKET_LIST[id];
+				} else {
+					console.log(colors.yellow("Error: ID " + id + " not found"));
+				}
+			} else {
+				console.log(colors.yellow("Error: Invalid ID"));
+			}
+		} else {
+			console.log(colors.yellow("Error: Player id needed"));
+		}
+	} else if(command == "help") {
+		console.log(colors.yellow("help          Show help"));
+		console.log(colors.yellow("exit          Stops the server"));
+		console.log(colors.yellow("list          List all players"));
+		console.log(colors.yellow("kickall       Kick all players"));
+		console.log(colors.yellow("kick <id>     Kick player"));
 	}
 });
 
