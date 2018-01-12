@@ -1026,12 +1026,37 @@ process.stdin.on('data', function (text) {
 		} else {
 			console.log(colors.yellow("Error: Player id needed"));
 		}
+	} else if(command == "name") {
+		var args = getArgs(text.trim());
+		if(args.length > 1) {
+			var id = parseFloat(args[0]);
+			if(id > 0) {
+				var player = PLAYER_LIST[id];
+				if(player != undefined) {
+					var name = "";
+					for(var i = 0; i < args.length - 1; i++) {
+						name += args[i + 1];
+						if(i < args.length) {
+							name += " ";
+						}
+					}
+					player.name = name;
+				} else {
+					console.log(colors.yellow("Error: ID " + id + " not found"));
+				}
+			} else {
+				console.log(colors.yellow("Error: Invalid ID"));
+			}
+		} else {
+			console.log(colors.yellow("Error: Player id and name needed"));
+		}
 	} else if(command == "help") {
-		console.log(colors.yellow("help          Show help"));
-		console.log(colors.yellow("exit          Stops the server"));
-		console.log(colors.yellow("list          List all players"));
-		console.log(colors.yellow("kickall       Kick all players"));
-		console.log(colors.yellow("kick <id>     Kick player"));
+		console.log(colors.yellow("help              Show help"));
+		console.log(colors.yellow("exit              Stops the server"));
+		console.log(colors.yellow("list              List all players"));
+		console.log(colors.yellow("kickall           Kick all players"));
+		console.log(colors.yellow("kick <id>         Kick player"));
+		console.log(colors.yellow("name <id> <name>  Change name of player"));
 	}
 });
 
