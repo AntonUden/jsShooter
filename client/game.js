@@ -31,6 +31,9 @@ var socket = io();
 var id = 0.0;
 var mx = 0;
 var my = 0;
+var lmx = -1;
+var lmy = -1;
+
 var upgHP = 500;
 
 var uiVisible = false;
@@ -336,11 +339,15 @@ setInterval(function() {
 
 // Sends mouse position to the server 30 times per second
 setInterval(function() {
-    var pack = {
-        x: mx,
-        y: my
-    };
-    socket.emit('mouseMove', pack);
+    if(!(lmx == mx && lmy == my)) {
+        var pack = {
+            x: mx,
+            y: my
+        };
+        socket.emit('mouseMove', pack);
+        lmx = mx;
+        lmy = my;
+    }
 }, 33);
 
 setInterval(function() {
