@@ -75,6 +75,7 @@ function changeName() {
         socket.emit("changeName", {
             name: name
         });
+        setCookie("jsshooter_name", name, 60);
         document.getElementById("nameInput").value = name;
     }
 }
@@ -401,4 +402,15 @@ document.onkeyup = function(event) {
         inputId: 'up',
         state: false
     });
+}
+
+try {
+    if(getCookie("jsshooter_name") != "") {
+        document.getElementById("nameInput").value = getCookie("jsshooter_name");
+        document.getElementById('setName').click();
+    } else {
+        setCookie("jsshooter_name", "Unnamed", 60);
+    }
+} catch(err) {
+
 }
