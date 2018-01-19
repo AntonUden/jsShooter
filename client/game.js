@@ -272,6 +272,7 @@ socket.on("newPositions", function(data) {
         ctx.stroke();
         ctx.fillStyle = "#000033";
         ctx.fillRect(data.powerups[i].x - 6, data.powerups[i].y - 6, 12, 12);
+        ctx.fillText("Powerup", data.powerups[i].x, data.powerups[i].y - 10);
     }
 
     for (var i = 0; i < data.bullets.length; i++) {
