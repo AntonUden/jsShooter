@@ -350,7 +350,7 @@ setInterval(function() {
         lmx = mx;
         lmy = my;
     }
-}, 33);
+}, 20);
 
 setInterval(function() {
     shooter_blink = !shooter_blink;
