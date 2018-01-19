@@ -1026,6 +1026,12 @@ process.stdin.on('data', function (text) {
 		} else {
 			console.log(colors.yellow("Error: Player id needed"));
 		}
+	} else if(command == "spawnpowerup") {
+		var sID = Math.random();
+		var x = Math.floor(Math.random() * 1180) + 10;
+		var y = Math.floor(Math.random() * 580) + 10;
+		POWERUP_LIST[sID] = PowerUp(x, y, sID);
+		console.log(colors.yellow("Powerup spawned at X: " + x, " Y: " + y));
 	} else if(command == "name") {
 		var args = getArgs(text.trim());
 		if(args.length > 1) {
@@ -1056,7 +1062,10 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("list              List all players"));
 		console.log(colors.yellow("kickall           Kick all players"));
 		console.log(colors.yellow("kick <id>         Kick player"));
+		console.log(colors.yellow("spawnPowerup      Spawns a powerup"));
 		console.log(colors.yellow("name <id> <name>  Change name of player"));
+	} else {
+		console.log(colors.yellow("Unknown command type help for help"));
 	}
 });
 
