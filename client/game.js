@@ -407,10 +407,14 @@ document.onkeyup = function(event) {
 
 try {
     if(getCookie("jsshooter_name") != "") {
+    	if(getCookie("jsshooter_name").length > 18) {
+    		console.error("[Warning] Name stored in cookie is too long. reseting to Unnamed");
+    		setCookie("jsshooter_name", "Unnamed", 360);
+    	}
         document.getElementById("nameInput").value = getCookie("jsshooter_name");
         document.getElementById('setName').click();
     } else {
-        setCookie("jsshooter_name", "Unnamed", 60);
+        setCookie("jsshooter_name", "Unnamed", 360);
     }
 } catch(err) {
 
