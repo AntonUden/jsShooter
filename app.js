@@ -44,9 +44,7 @@ var NPCShooter = function(id, x, y) {
 			var bID = Math.random() * 200;
 			var target = PLAYER_LIST[self.targetPlayer];
 			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI, 1);
-		} catch(error) {
-
-		}
+		} catch(error) {}
 	}
 
 	self.update = function() {
@@ -85,10 +83,7 @@ var NPCShooter = function(id, x, y) {
 					
 				} else {
 				}
-
-			} catch(err) {
-
-			}
+			} catch(err) {}
 		}
 		if(self.hp <= 0) {
 			delete NPCSHOOTER_LIST[self.id];
@@ -137,12 +132,8 @@ var NPCAttacker = function(id, x, y) {
  						self.y += Math.sin(dir/180*Math.PI) * 2;
  					}
  					
-  				} else {
   				}
-
-			} catch(err) {
-
-			}
+			} catch(err) {}
 		}
 		if(self.attackCooldown > 0) {
 			self.attackCooldown--;
@@ -674,8 +665,7 @@ io.sockets.on("connection", function(socket) {
 				player.mx = data.x;
 				player.my = data.y;
 			}
-		} catch(err) {
-		}
+		} catch(err) {}
 	});
 });
 
