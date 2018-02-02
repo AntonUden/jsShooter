@@ -858,7 +858,6 @@ setInterval(function() {
 
 			if(player.joinKickTimeout < 0) {
 				playerPack.push({
-					type:1,
 					x:player.x,
 					y:player.y,
 					name:player.name,
@@ -886,12 +885,10 @@ setInterval(function() {
 			var bullet = BULLET_LIST[b];
 			bullet.update();
 			bulletPack.push({
-				type:2,
 				size:bullet.size,
 				x:bullet.x,
 				y:bullet.y,
 				id:bullet.id,
-				ownerID:bullet.owner
 			});
 		}
 
