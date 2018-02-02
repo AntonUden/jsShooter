@@ -267,10 +267,10 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 			}
 		}
 
-		if(self.x < -10 || self.x > 1210) {
+		if(self.x < 0 || self.x > 1200) {
 			self.lifetime = 0;
 		}
-		if(self.y < -10 || self.y > 610) {
+		if(self.y < 0 || self.y > 600) {
 			self.lifetime = 0;
 		}
 
