@@ -565,8 +565,7 @@ io.sockets.on("connection", function(socket) {
 				player.pressingUp = data.state;
 			else if(data.inputId === 'down')
 				player.pressingDown = data.state;
-		} catch(err) {
-		}
+		} catch(err) {}
 	});
 
 	socket.on('changeName', function(data) {
@@ -574,9 +573,7 @@ io.sockets.on("connection", function(socket) {
 			var player = getPlayerByID(socket.id);
 			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
 			player.name = data.name;
-		} catch(err) {
-			
-		}
+		} catch(err) {}
 	});
 
 	socket.on('not afk', function(data) {
