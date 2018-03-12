@@ -14,6 +14,8 @@ var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
 
+if(process.env.PORT == undefined)
+	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
 console.log(colors.green("[jsShooter] Socket started on port " + port));
 
 var SOCKET_LIST = {};
