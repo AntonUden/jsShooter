@@ -1,7 +1,7 @@
 {
   "name": "jsShooter",
   "version": "1.0.0",
-  "description": "",
+  "description": "Nodejs game",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
@@ -17,8 +17,8 @@
     "socket.io": "2.0.3"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Zeeraa",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Zeeraa/jsShooter/issues"
   },
