@@ -340,7 +340,7 @@ setInterval(function() {
     }
 }, 50);
 
-// Sends mouse position to the server 30 times per second
+// Sends mouse position to the server 20 times per second
 setInterval(function() {
     if(!(lmx == mx && lmy == my)) {
         var pack = {
@@ -351,7 +351,7 @@ setInterval(function() {
         lmx = mx;
         lmy = my;
     }
-}, 20);
+}, 50);
 
 setInterval(function() {
     shooter_blink = !shooter_blink;
