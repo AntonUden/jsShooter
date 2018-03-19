@@ -11,7 +11,7 @@ app.get('/',function(req, res) {
 app.use('/client',express.static(__dirname + '/client'));
 
 //---------- Server settings ----------
-var MAX_SOCKET_ACTIVITY_PER_SECOND = 500;
+var MAX_SOCKET_ACTIVITY_PER_SECOND = 1000;
 var fps = 30;
 //-------------------------------------
 
