@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
 var colors = require('colors/safe');
+var middleware = require('socketio-wildcard')();
 
 console.log(colors.green("[jsShooter] Starting server..."));
 app.get('/',function(req, res) {
@@ -10,13 +11,16 @@ app.get('/',function(req, res) {
 app.use('/client',express.static(__dirname + '/client'));
 
 //---------- Server settings ----------
-var MAX_SOCKET_ACTIVITY_PER_SECOND = 600;
+var MAX_SOCKET_ACTIVITY_PER_SECOND = 500;
 var fps = 30;
 //-------------------------------------
 
 var port = process.env.PORT || 80;
 serv.listen(port);
+
 var io = require("socket.io")(serv, {});
+
+io.use(middleware);
 
 if(process.env.PORT == undefined)
 	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
@@ -544,7 +548,6 @@ io.sockets.on("connection", function(socket) {
 	if(SOCKET_ACTIVITY[socket.id] == undefined) {
 		SOCKET_ACTIVITY[socket.id] = 0;
 	}
-	SOCKET_ACTIVITY[socket.id]++;
 	SOCKET_LIST[socket.id] = socket;
 	var player = Player(socket.id);
 	PLAYER_LIST[socket.id] = player;
@@ -554,7 +557,6 @@ io.sockets.on("connection", function(socket) {
 	});
 	
 	socket.on("disconnect", function() {
-		SOCKET_ACTIVITY[socket.id]++;
 		for(var b in BULLET_LIST) {
 			var bullet = BULLET_LIST[b];
 			if(bullet.owner == socket.id) {
@@ -567,7 +569,6 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('keyPress',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			if(data.inputId === 'left')
 				player.pressingLeft = data.state;
@@ -581,7 +582,6 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('changeName', function(data) {
-		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
 			if(player.name != data.name ) {
@@ -595,7 +595,6 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('not afk', function(data) {
-		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
 			player.afkKickTimeout = 100;
@@ -603,7 +602,6 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('kthx',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			player.joinKickTimeout = -1;
@@ -611,9 +609,13 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	socket.on("*", function(data) {
+		SOCKET_ACTIVITY[socket.id]++;
+		//console.log(data);
+	});
+
 	// HP Upgrade
 	socket.on('upgHPClicked',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(player.score >= player.upgHPPrice) {
@@ -629,7 +631,6 @@ io.sockets.on("connection", function(socket) {
 
 	// Fire speed upgrade
 	socket.on('upgFSpeedClicked',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.doubleFireSpeed) {
@@ -648,7 +649,6 @@ io.sockets.on("connection", function(socket) {
 
 	// Bullet size upgrade
 	socket.on('upgBulletSize',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.doubleBulletSize) {
@@ -662,7 +662,6 @@ io.sockets.on("connection", function(socket) {
 
 	// Dual bullet upgrade
 	socket.on('upgDualBullets', function() {
-		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.dualBullets) {
@@ -680,7 +679,6 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('mouseMove',function(data){
-		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
 			if(player != undefined && data.x != undefined && data.y != undefined) {
@@ -1108,6 +1106,5 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("Unknown command type help for help"));
 	}
 });
-
 
 console.log(colors.green("[jsShooter] Server started "));
