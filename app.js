@@ -562,9 +562,8 @@ io.sockets.on("connection", function(socket) {
 				delete BULLET_LIST[b];
 			}
 		}
-		delete SOCKET_LIST[socket.id];
-		delete SOCKET_ACTIVITY[socket.id];
 		delete PLAYER_LIST[socket.id];
+		disconnectSocket(socket.id);
 		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
 	});
 
@@ -738,6 +737,12 @@ setInterval(function() {
 	}
 }, 500);
 
+function disconnectSocket(id) {
+	SOCKET_LIST[id].disconnect();
+	delete SOCKET_LIST[id];
+	delete SOCKET_ACTIVITY[id];
+}
+
 // Spawn / despawn / afk test loop
 setInterval(function() {
 	try {
@@ -746,8 +751,7 @@ setInterval(function() {
 			if(SOCKET_ACTIVITY[sa] > MAX_SOCKET_ACTIVITY_PER_SECOND) {
 				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity. " + SOCKET_ACTIVITY[sa] + " Messages in 1 second"));
 				delete PLAYER_LIST[sa];
-				delete SOCKET_LIST[sa];
-				delete SOCKET_ACTIVITY[sa];
+				disconnectSocket(sa);
 			} else {
 				SOCKET_ACTIVITY[sa] = 0;
 			}
@@ -862,8 +866,7 @@ setInterval(function() {
 		}
 		if(player.joinKickTimeout == 0 || player.afkKickTimeout <= 0) {
 			delete PLAYER_LIST[player.id];
-			delete SOCKET_ACTIVITY[player.id];
-			delete SOCKET_LIST[player.id];
+			disconnectSocket(player.id);
 			console.log(colors.red("[jsShooter] Kicked " + player.id + " for inactivity"));
 		}
 	}
@@ -1024,8 +1027,7 @@ process.stdin.on('data', function (text) {
 			delete PLAYER_LIST[p];
 		}
 		for(var s in SOCKET_LIST) {
-			delete SOCKET_LIST[s];
-			delete SOCKET_ACTIVITY[s];
+			disconnectSocket(s);
 		}
 	} else if(command == "list") {
 		console.log(colors.yellow(Object.keys(PLAYER_LIST).length + " Players online"));
@@ -1041,8 +1043,7 @@ process.stdin.on('data', function (text) {
 				if(PLAYER_LIST[id] != undefined) {
 					console.log(colors.yellow("Kicked player with id " + id));
 					delete PLAYER_LIST[id];
-					delete SOCKET_LIST[id];
-					delete SOCKET_ACTIVITY[id];
+					disconnectSocket(id);
 				} else {
 					console.log(colors.yellow("Error: ID " + id + " not found"));
 				}
