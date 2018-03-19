@@ -542,7 +542,6 @@ function spawnShooter() {
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
 	if(SOCKET_ACTIVITY[socket.id] == undefined) {
-		console.log("SOCKET_ACTIVITY Undefined");
 		SOCKET_ACTIVITY[socket.id] = 0;
 	}
 	SOCKET_ACTIVITY[socket.id]++;
