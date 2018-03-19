@@ -41,6 +41,7 @@ var shooter_blink = true;
 var dead = false;
 var respawnCooldown = 0;
 var colorBlink = 0;
+
 socket.on("id", function(data) {
     console.log("Your id is " + data.id);
     id = data.id;
@@ -339,7 +340,7 @@ setInterval(function() {
     }
 }, 50);
 
-// Sends mouse position to the server 30 times per second
+// Sends mouse position to the server 20 times per second
 setInterval(function() {
     if(!(lmx == mx && lmy == my)) {
         var pack = {
@@ -350,7 +351,7 @@ setInterval(function() {
         lmx = mx;
         lmy = my;
     }
-}, 20);
+}, 50);
 
 setInterval(function() {
     shooter_blink = !shooter_blink;
@@ -408,7 +409,7 @@ document.onkeyup = function(event) {
 try {
     if(getCookie("jsshooter_name") != "") {
     	if(getCookie("jsshooter_name").length > 18) {
-    		console.error("[Warning] Name stored in cookie is too long. reseting to Unnamed");
+    		console.error("[Warning] Name stored in cookie is too long. resetting to Unnamed");
     		setCookie("jsshooter_name", "Unnamed", 360);
     	}
         document.getElementById("nameInput").value = getCookie("jsshooter_name");
@@ -416,6 +417,4 @@ try {
     } else {
         setCookie("jsshooter_name", "Unnamed", 360);
     }
-} catch(err) {
-
-}
+} catch(err) {}

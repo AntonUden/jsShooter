@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
 var colors = require('colors/safe');
+var middleware = require('socketio-wildcard')();
 
 console.log(colors.green("[jsShooter] Starting server..."));
 app.get('/',function(req, res) {
@@ -9,16 +10,24 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
+//---------- Server settings ----------
+var MAX_SOCKET_ACTIVITY_PER_SECOND = 1000;
 var fps = 30;
+//-------------------------------------
+
 var port = process.env.PORT || 80;
 serv.listen(port);
+
 var io = require("socket.io")(serv, {});
+
+io.use(middleware);
 
 if(process.env.PORT == undefined)
 	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
 console.log(colors.green("[jsShooter] Socket started on port " + port));
 
 var SOCKET_LIST = {};
+var SOCKET_ACTIVITY = {};
 var PLAYER_LIST = {};
 var BULLET_LIST = {};
 var BLOCK_LIST = {};
@@ -83,8 +92,7 @@ var NPCShooter = function(id, x, y) {
 
 				if(!(self.targetPlayer == -1)) {
 					
-				} else {
-				}
+				} else {}
 			} catch(err) {}
 		}
 		if(self.hp <= 0) {
@@ -537,6 +545,9 @@ function spawnShooter() {
 
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
+	if(SOCKET_ACTIVITY[socket.id] == undefined) {
+		SOCKET_ACTIVITY[socket.id] = 0;
+	}
 	SOCKET_LIST[socket.id] = socket;
 	var player = Player(socket.id);
 	PLAYER_LIST[socket.id] = player;
@@ -552,8 +563,8 @@ io.sockets.on("connection", function(socket) {
 				delete BULLET_LIST[b];
 			}
 		}
-		delete SOCKET_LIST[socket.id];
 		delete PLAYER_LIST[socket.id];
+		disconnectSocket(socket.id);
 		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
 	});
 
@@ -573,8 +584,13 @@ io.sockets.on("connection", function(socket) {
 	socket.on('changeName', function(data) {
 		try {
 			var player = getPlayerByID(socket.id);
-			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
-			player.name = data.name;
+			if(player.name != data.name ) {
+				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
+				player.name = data.name;
+			}
+			if(data.name.length > 100) {
+
+			}
 		} catch(err) {}
 	});
 
@@ -591,6 +607,11 @@ io.sockets.on("connection", function(socket) {
 			player.joinKickTimeout = -1;
 			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
 		}
+	});
+
+	socket.on("*", function(data) {
+		SOCKET_ACTIVITY[socket.id]++;
+		//console.log(data);
 	});
 
 	// HP Upgrade
@@ -713,9 +734,26 @@ setInterval(function() {
 	}
 }, 500);
 
+function disconnectSocket(id) {
+	SOCKET_LIST[id].disconnect();
+	delete SOCKET_LIST[id];
+	delete SOCKET_ACTIVITY[id];
+}
+
 // Spawn / despawn / afk test loop
 setInterval(function() {
 	try {
+		// Overload protection
+		for(var sa in SOCKET_ACTIVITY) {
+			if(SOCKET_ACTIVITY[sa] > MAX_SOCKET_ACTIVITY_PER_SECOND) {
+				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity. " + SOCKET_ACTIVITY[sa] + " > " + MAX_SOCKET_ACTIVITY_PER_SECOND + " Messages in 1 second"));
+				delete PLAYER_LIST[sa];
+				disconnectSocket(sa);
+			} else {
+				SOCKET_ACTIVITY[sa] = 0;
+			}
+		}
+
 		// Spawn attackers
 		if(Object.keys(ATTACKER_LIST).length < 3 && Math.floor(Math.random() * 4) == 1) {
 			if(countActivePlayers() > 0) {
@@ -825,7 +863,7 @@ setInterval(function() {
 		}
 		if(player.joinKickTimeout == 0 || player.afkKickTimeout <= 0) {
 			delete PLAYER_LIST[player.id];
-			delete SOCKET_LIST[player.id];
+			disconnectSocket(player.id);
 			console.log(colors.red("[jsShooter] Kicked " + player.id + " for inactivity"));
 		}
 	}
@@ -986,7 +1024,7 @@ process.stdin.on('data', function (text) {
 			delete PLAYER_LIST[p];
 		}
 		for(var s in SOCKET_LIST) {
-			delete SOCKET_LIST[s];
+			disconnectSocket(s);
 		}
 	} else if(command == "list") {
 		console.log(colors.yellow(Object.keys(PLAYER_LIST).length + " Players online"));
@@ -1002,7 +1040,7 @@ process.stdin.on('data', function (text) {
 				if(PLAYER_LIST[id] != undefined) {
 					console.log(colors.yellow("Kicked player with id " + id));
 					delete PLAYER_LIST[id];
-					delete SOCKET_LIST[id];
+					disconnectSocket(id);
 				} else {
 					console.log(colors.yellow("Error: ID " + id + " not found"));
 				}
@@ -1018,6 +1056,19 @@ process.stdin.on('data', function (text) {
 		var y = Math.floor(Math.random() * 580) + 10;
 		POWERUP_LIST[sID] = PowerUp(x, y, sID);
 		console.log(colors.yellow("Powerup spawned at X: " + x, " Y: " + y));
+	} else if(command == "maxsocactivity") {
+		var args = getArgs(text.trim());
+		if(args.length > 0) {
+			var mmps = parseFloat(args[0]);
+			if(mmps > 20) {
+				MAX_SOCKET_ACTIVITY_PER_SECOND = mmps;
+				console.log(colors.yellow("MAX_SOCKET_ACTIVITY_PER_SECOND Set to " + mmps));
+			} else {
+				console.log(colors.yellow("Error: Too low value. Needs to be larger than 20"));
+			}
+		} else {
+			console.log(colors.yellow("Error: Max messages per second needed"));
+		}
 	} else if(command == "name") {
 		var args = getArgs(text.trim());
 		if(args.length > 1) {
@@ -1050,10 +1101,10 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("kick <id>         Kick player"));
 		console.log(colors.yellow("spawnPowerup      Spawns a powerup"));
 		console.log(colors.yellow("name <id> <name>  Change name of player"));
+		console.log(colors.yellow("maxsocactivity n  socket gets kicked if it sends more then n messages per second"));
 	} else {
 		console.log(colors.yellow("Unknown command type help for help"));
 	}
 });
-
 
 console.log(colors.green("[jsShooter] Server started "));
