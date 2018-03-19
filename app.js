@@ -19,6 +19,7 @@ if(process.env.PORT == undefined)
 console.log(colors.green("[jsShooter] Socket started on port " + port));
 
 var SOCKET_LIST = {};
+var SOCKET_ACTIVITY = {};
 var PLAYER_LIST = {};
 var BULLET_LIST = {};
 var BLOCK_LIST = {};
@@ -83,8 +84,7 @@ var NPCShooter = function(id, x, y) {
 
 				if(!(self.targetPlayer == -1)) {
 					
-				} else {
-				}
+				} else {}
 			} catch(err) {}
 		}
 		if(self.hp <= 0) {
@@ -537,6 +537,11 @@ function spawnShooter() {
 
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
+	if(SOCKET_ACTIVITY[socket.id] == undefined) {
+		console.log("SOCKET_ACTIVITY Undefined");
+		SOCKET_ACTIVITY[socket.id] = 0;
+	}
+	SOCKET_ACTIVITY[socket.id]++;
 	SOCKET_LIST[socket.id] = socket;
 	var player = Player(socket.id);
 	PLAYER_LIST[socket.id] = player;
@@ -546,6 +551,7 @@ io.sockets.on("connection", function(socket) {
 	});
 	
 	socket.on("disconnect", function() {
+		SOCKET_ACTIVITY[socket.id]++;
 		for(var b in BULLET_LIST) {
 			var bullet = BULLET_LIST[b];
 			if(bullet.owner == socket.id) {
@@ -553,11 +559,13 @@ io.sockets.on("connection", function(socket) {
 			}
 		}
 		delete SOCKET_LIST[socket.id];
+		delete SOCKET_ACTIVITY[socket.id];
 		delete PLAYER_LIST[socket.id];
 		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
 	});
 
 	socket.on('keyPress',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			if(data.inputId === 'left')
 				player.pressingLeft = data.state;
@@ -571,14 +579,21 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('changeName', function(data) {
+		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
-			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
-			player.name = data.name;
+			if(player.name != data.name ) {
+				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
+				player.name = data.name;
+			}
+			if(data.name.length > 100) {
+
+			}
 		} catch(err) {}
 	});
 
 	socket.on('not afk', function(data) {
+		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
 			player.afkKickTimeout = 100;
@@ -586,6 +601,7 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('kthx',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			player.joinKickTimeout = -1;
@@ -595,6 +611,7 @@ io.sockets.on("connection", function(socket) {
 
 	// HP Upgrade
 	socket.on('upgHPClicked',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(player.score >= player.upgHPPrice) {
@@ -610,6 +627,7 @@ io.sockets.on("connection", function(socket) {
 
 	// Fire speed upgrade
 	socket.on('upgFSpeedClicked',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.doubleFireSpeed) {
@@ -628,6 +646,7 @@ io.sockets.on("connection", function(socket) {
 
 	// Bullet size upgrade
 	socket.on('upgBulletSize',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.doubleBulletSize) {
@@ -641,6 +660,7 @@ io.sockets.on("connection", function(socket) {
 
 	// Dual bullet upgrade
 	socket.on('upgDualBullets', function() {
+		SOCKET_ACTIVITY[socket.id]++;
 		var player = getPlayerByID(socket.id);
 		if(!(player == undefined)) {
 			if(!player.dualBullets) {
@@ -658,6 +678,7 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('mouseMove',function(data){
+		SOCKET_ACTIVITY[socket.id]++;
 		try {
 			var player = getPlayerByID(socket.id);
 			if(player != undefined && data.x != undefined && data.y != undefined) {
@@ -713,9 +734,23 @@ setInterval(function() {
 	}
 }, 500);
 
+var MAX_SOCKET_ACTIVITY_PER_SECOND = 800;
+
 // Spawn / despawn / afk test loop
 setInterval(function() {
 	try {
+		// Overload protection
+		for(var sa in SOCKET_ACTIVITY) {
+			if(SOCKET_ACTIVITY[sa] > MAX_SOCKET_ACTIVITY_PER_SECOND) {
+				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity"));
+				delete PLAYER_LIST[sa];
+				delete SOCKET_LIST[sa];
+				delete SOCKET_ACTIVITY[sa];
+			} else {
+				SOCKET_ACTIVITY[sa] = 0;
+			}
+		}
+
 		// Spawn attackers
 		if(Object.keys(ATTACKER_LIST).length < 3 && Math.floor(Math.random() * 4) == 1) {
 			if(countActivePlayers() > 0) {
@@ -825,6 +860,7 @@ setInterval(function() {
 		}
 		if(player.joinKickTimeout == 0 || player.afkKickTimeout <= 0) {
 			delete PLAYER_LIST[player.id];
+			delete SOCKET_ACTIVITY[player.id];
 			delete SOCKET_LIST[player.id];
 			console.log(colors.red("[jsShooter] Kicked " + player.id + " for inactivity"));
 		}
@@ -987,6 +1023,7 @@ process.stdin.on('data', function (text) {
 		}
 		for(var s in SOCKET_LIST) {
 			delete SOCKET_LIST[s];
+			delete SOCKET_ACTIVITY[s];
 		}
 	} else if(command == "list") {
 		console.log(colors.yellow(Object.keys(PLAYER_LIST).length + " Players online"));
@@ -1003,6 +1040,7 @@ process.stdin.on('data', function (text) {
 					console.log(colors.yellow("Kicked player with id " + id));
 					delete PLAYER_LIST[id];
 					delete SOCKET_LIST[id];
+					delete SOCKET_ACTIVITY[id];
 				} else {
 					console.log(colors.yellow("Error: ID " + id + " not found"));
 				}
