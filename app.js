@@ -9,7 +9,11 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
+//---------- Server settings ----------
+var MAX_SOCKET_ACTIVITY_PER_SECOND = 800;
 var fps = 30;
+//-------------------------------------
+
 var port = process.env.PORT || 80;
 serv.listen(port);
 var io = require("socket.io")(serv, {});
@@ -734,15 +738,13 @@ setInterval(function() {
 	}
 }, 500);
 
-var MAX_SOCKET_ACTIVITY_PER_SECOND = 800;
-
 // Spawn / despawn / afk test loop
 setInterval(function() {
 	try {
 		// Overload protection
 		for(var sa in SOCKET_ACTIVITY) {
 			if(SOCKET_ACTIVITY[sa] > MAX_SOCKET_ACTIVITY_PER_SECOND) {
-				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity"));
+				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity. " + SOCKET_ACTIVITY[sa] + " Messages in 1 second"));
 				delete PLAYER_LIST[sa];
 				delete SOCKET_LIST[sa];
 				delete SOCKET_ACTIVITY[sa];
@@ -1056,6 +1058,19 @@ process.stdin.on('data', function (text) {
 		var y = Math.floor(Math.random() * 580) + 10;
 		POWERUP_LIST[sID] = PowerUp(x, y, sID);
 		console.log(colors.yellow("Powerup spawned at X: " + x, " Y: " + y));
+	} else if(command == "maxsocactivity") {
+		var args = getArgs(text.trim());
+		if(args.length > 0) {
+			var mmps = parseFloat(args[0]);
+			if(mmps > 20) {
+				MAX_SOCKET_ACTIVITY_PER_SECOND = mmps;
+				console.log(colors.yellow("MAX_SOCKET_ACTIVITY_PER_SECOND Set to " + mmps));
+			} else {
+				console.log(colors.yellow("Error: Too low value. Needs to be larger than 20"));
+			}
+		} else {
+			console.log(colors.yellow("Error: Max messages per second needed"));
+		}
 	} else if(command == "name") {
 		var args = getArgs(text.trim());
 		if(args.length > 1) {
@@ -1088,6 +1103,7 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("kick <id>         Kick player"));
 		console.log(colors.yellow("spawnPowerup      Spawns a powerup"));
 		console.log(colors.yellow("name <id> <name>  Change name of player"));
+		console.log(colors.yellow("maxsocactivity n  socket gets kicked if it sends more then n messages per second"));
 	} else {
 		console.log(colors.yellow("Unknown command type help for help"));
 	}
