@@ -745,6 +745,11 @@ setInterval(function() {
 	try {
 		// Overload protection
 		for(var sa in SOCKET_ACTIVITY) {
+			if(isNaN(SOCKET_ACTIVITY[sa])) {
+				delete SOCKET_ACTIVITY[sa];
+				break;
+			}
+
 			if(SOCKET_ACTIVITY[sa] > MAX_SOCKET_ACTIVITY_PER_SECOND) {
 				console.log(colors.red("[jsShooter] Kicked " + sa + " Too high network activity. " + SOCKET_ACTIVITY[sa] + " > " + MAX_SOCKET_ACTIVITY_PER_SECOND + " Messages in 1 second"));
 				delete PLAYER_LIST[sa];
