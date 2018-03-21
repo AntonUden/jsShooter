@@ -16,14 +16,13 @@ var fps = 30;
 //-------------------------------------
 
 var port = process.env.PORT || 80;
-serv.listen(port);
-
-var io = require("socket.io")(serv, {});
-
-io.use(middleware);
-
 if(process.env.PORT == undefined)
 	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
+
+serv.listen(port);
+var io = require("socket.io")(serv, {});
+io.use(middleware);
+
 console.log(colors.green("[jsShooter] Socket started on port " + port));
 
 var SOCKET_LIST = {};
@@ -35,6 +34,7 @@ var ATTACKER_LIST = {};
 var NPCSHOOTER_LIST = {};
 var POWERUP_LIST = {};
 
+// ---------- Entities ----------
 // Npc shooter object
 var NPCShooter = function(id, x, y) {
 	var self = {
@@ -435,6 +435,7 @@ var PowerUp = function(x, y, id) {
 	return self;
 }
 
+// ---------- Functions ----------
 function getPlayerByID(id) {
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
@@ -542,6 +543,46 @@ function spawnShooter() {
 	NPCSHOOTER_LIST[id] = NPCShooter(id, x, y);
 	return id;
 }
+
+function disconnectSocket(id) {
+	SOCKET_LIST[id].disconnect();
+	delete SOCKET_LIST[id];
+	delete SOCKET_ACTIVITY[id];
+}
+
+function getCommand(text) {
+	var command = "";
+	for(var i = 0; i < text.length; i++) {
+		if(text.charAt(i) == ' ') {
+			i = text.length;
+		} else {
+			command += text.charAt(i);
+		}
+	}
+	return command.toLowerCase();
+}
+
+function getArgs(text) {
+	var args = [];
+	var arg = "";
+	var j = false;
+	text += " ";
+	for(var i = 0; i < text.length; i++) {
+		if(text.charAt(i) == ' ') {
+			if(!j) {
+				j = true;
+			} else {
+				args.push(arg);
+			}
+			arg = "";
+		} else {
+			arg += text.charAt(i);
+		}
+	}
+	return args;
+}
+
+// ---------- Socket Connections ----------
 
 io.sockets.on("connection", function(socket) {
 	socket.id = Math.random();
@@ -689,6 +730,7 @@ io.sockets.on("connection", function(socket) {
 	});
 });
 
+// ---------- Loops ----------
 // Bullet fire loop
 setInterval(function() {
 	for(var p in PLAYER_LIST) {
@@ -733,12 +775,6 @@ setInterval(function() {
 		spawnBlock();
 	}
 }, 500);
-
-function disconnectSocket(id) {
-	SOCKET_LIST[id].disconnect();
-	delete SOCKET_LIST[id];
-	delete SOCKET_ACTIVITY[id];
-}
 
 // Spawn / despawn / afk test loop
 setInterval(function() {
@@ -979,44 +1015,9 @@ setInterval(function() {
 	}
 },(1000 / fps));
 
-//Spawn 20 block at start
-for(var spBlock = 0; spBlock < 20; spBlock++) {
-	spawnBlock();
-}
+// ---------- Commands ----------
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
-
-function getCommand(text) {
-	var command = "";
-	for(var i = 0; i < text.length; i++) {
-		if(text.charAt(i) == ' ') {
-			i = text.length;
-		} else {
-			command += text.charAt(i);
-		}
-	}
-	return command.toLowerCase();
-}
-
-function getArgs(text) {
-	var args = [];
-	var arg = "";
-	var j = false;
-	text += " ";
-	for(var i = 0; i < text.length; i++) {
-		if(text.charAt(i) == ' ') {
-			if(!j) {
-				j = true;
-			} else {
-				args.push(arg);
-			}
-			arg = "";
-		} else {
-			arg += text.charAt(i);
-		}
-	}
-	return args;
-}
 
 process.stdin.on('data', function (text) {
 	var command = getCommand(text.trim());
@@ -1111,5 +1112,10 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("Unknown command type help for help"));
 	}
 });
+// ------------------------------
 
+//Spawn 20 block at start
+for(var spBlock = 0; spBlock < 20; spBlock++) {
+	spawnBlock();
+}
 console.log(colors.green("[jsShooter] Server started "));
