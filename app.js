@@ -598,15 +598,17 @@ io.sockets.on("connection", function(socket) {
 	});
 	
 	socket.on("disconnect", function() {
-		for(var b in BULLET_LIST) {
-			var bullet = BULLET_LIST[b];
-			if(bullet.owner == socket.id) {
-				delete BULLET_LIST[b];
+		try {
+			for(var b in BULLET_LIST) {
+				var bullet = BULLET_LIST[b];
+				if(bullet.owner == socket.id) {
+					delete BULLET_LIST[b];
+				}
 			}
-		}
-		delete PLAYER_LIST[socket.id];
-		disconnectSocket(socket.id);
-		console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
+			delete PLAYER_LIST[socket.id];
+			disconnectSocket(socket.id);
+			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
+		} catch(err) {}
 	});
 
 	socket.on('keyPress',function(data){
@@ -624,13 +626,20 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on('changeName', function(data) {
 		try {
+			if(data.name.length > 64) { // Name is way too long. Kick the player for sending too much data
+				console.log(colors.red("[jsShooter] Player with id " + socket.id + " tried to change name to " + data.name + " but it is longer than 64 chars. Disconnecting socket"));
+				disconnectSocket(socket.id);
+				return;
+			}
+
+			if(data.name.length > 16) { // Name is too long
+				return;
+			}
+
 			var player = getPlayerByID(socket.id);
 			if(player.name != data.name ) {
 				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
 				player.name = data.name;
-			}
-			if(data.name.length > 100) {
-
 			}
 		} catch(err) {}
 	});
@@ -643,80 +652,92 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on('kthx',function(data){
-		var player = getPlayerByID(socket.id);
-		if(!(player == undefined)) {
-			player.joinKickTimeout = -1;
-			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
-		}
+		try {
+			var player = getPlayerByID(socket.id);
+			if(!(player == undefined)) {
+				player.joinKickTimeout = -1;
+				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
+			}
+		} catch(err) {}
 	});
 
 	socket.on("*", function(data) {
-		SOCKET_ACTIVITY[socket.id]++;
-		//console.log(data);
+		try {
+			SOCKET_ACTIVITY[socket.id]++;
+			//console.log(data);
+		} catch(err) {}
 	});
 
 	// HP Upgrade
 	socket.on('upgHPClicked',function(data){
-		var player = getPlayerByID(socket.id);
-		if(!(player == undefined)) {
-			if(player.score >= player.upgHPPrice) {
-				player.maxHp++;
-				player.score-=player.upgHPPrice;
-				player.upgHPPrice+=250;
-				if(player.hp < player.maxHp) {
-					player.hp++;
+		try {
+			var player = getPlayerByID(socket.id);
+			if(!(player == undefined)) {
+				if(player.score >= player.upgHPPrice) {
+					player.maxHp++;
+					player.score-=player.upgHPPrice;
+					player.upgHPPrice+=250;
+					if(player.hp < player.maxHp) {
+						player.hp++;
+					}
 				}
 			}
-		}
+		} catch(err) {}
 	});
 
 	// Fire speed upgrade
 	socket.on('upgFSpeedClicked',function(data){
-		var player = getPlayerByID(socket.id);
-		if(!(player == undefined)) {
-			if(!player.doubleFireSpeed) {
-				if(player.score >= 2000) {
-					player.doubleFireSpeed = true;
-					player.score-=2000;
-				}
-			} else if(!player.quadrupleFireSpeed) {
-				if(player.score >= 8000) {
-					player.quadrupleFireSpeed = true;
-					player.score-=8000;
+		try {
+			var player = getPlayerByID(socket.id);
+			if(!(player == undefined)) {
+				if(!player.doubleFireSpeed) {
+					if(player.score >= 2000) {
+						player.doubleFireSpeed = true;
+						player.score-=2000;
+					}
+				} else if(!player.quadrupleFireSpeed) {
+					if(player.score >= 8000) {
+						player.quadrupleFireSpeed = true;
+						player.score-=8000;
+					}
 				}
 			}
-		}
+		} catch(err) {}
 	});
 
 	// Bullet size upgrade
 	socket.on('upgBulletSize',function(data){
-		var player = getPlayerByID(socket.id);
-		if(!(player == undefined)) {
-			if(!player.doubleBulletSize) {
-				if(player.score >= 5000) {
-					player.doubleBulletSize = true;
-					player.score-=5000;
+		try {
+			var player = getPlayerByID(socket.id);
+			if(!(player == undefined)) {
+				if(!player.doubleBulletSize) {
+					if(player.score >= 5000) {
+						player.doubleBulletSize = true;
+						player.score-=5000;
+					}
 				}
 			}
-		}
+		} catch(err) {}
 	});	
 
 	// Dual bullet upgrade
 	socket.on('upgDualBullets', function() {
-		var player = getPlayerByID(socket.id);
-		if(!(player == undefined)) {
-			if(!player.dualBullets) {
-				if(player.score >= 5000) {
-					player.dualBullets = true;
-					player.score-=5000;
-				}
-			} else {
-				if(player.score >= 8000) {
-					player.quadrupleBullets = true;
-					player.score-=8000;
+		try {
+			var player = getPlayerByID(socket.id);
+			if(!(player == undefined)) {
+				if(!player.dualBullets) {
+					if(player.score >= 5000) {
+						player.dualBullets = true;
+						player.score-=5000;
+					}
+				} else {
+					if(player.score >= 8000) {
+						player.quadrupleBullets = true;
+						player.score-=8000;
+					}
 				}
 			}
-		}
+		} catch(err) {}
 	});
 
 	socket.on('mouseMove',function(data){
