@@ -314,7 +314,7 @@ var Player = function(id) {
 		my:0,
 		powerupTime:-1,
 		score:0,
-		maxSpd:3,
+		maxSpeed:3,
 		name:"Unnamed",
 		doubleFireSpeed:false,
 		doubleBulletSize:false,
@@ -343,7 +343,7 @@ var Player = function(id) {
 
 		self.maxHp = 10;
 		self.regen = -1;
-		self.maxSpd = 3;
+		self.maxSpeed = 3;
 		self.doubleFireSpeed = false;
 		self.quadrupleFireSpeed = false;
 		self.doubleBulletSize = false;
@@ -374,9 +374,9 @@ var Player = function(id) {
 
 	self.update = function() {
 		if(self.powerupTime > 0) {
-			self.maxSpd = 6;
+			self.maxSpeed = 6;
 		} else {
-			self.maxSpd = 3;
+			self.maxSpeed = 3;
 		}
 		if(self.hp <= 0) {
 			self.respawn();
@@ -384,23 +384,23 @@ var Player = function(id) {
 		}
 		if(self.spawnCooldown < 0) {
 			if(self.pressingRight) {
-				if(self.x < (1200 - self.maxSpd) - 10) {
-					self.x += self.maxSpd;
+				if(self.x < (1200 - self.maxSpeed) - 10) {
+					self.x += self.maxSpeed;
 				}
 			}
 			if(self.pressingLeft) {
-				if(self.x > (0 + self.maxSpd) + 10) {
-					self.x -= self.maxSpd;
+				if(self.x > (0 + self.maxSpeed) + 10) {
+					self.x -= self.maxSpeed;
 				}
 			}
 			if(self.pressingUp) {
-				if(self.y > (0 + self.maxSpd) + 10) {
-					self.y -= self.maxSpd;
+				if(self.y > (0 + self.maxSpeed) + 10) {
+					self.y -= self.maxSpeed;
 				}
 			}
 			if(self.pressingDown) {
-				if(self.y < (600 - self.maxSpd) - 10) {
-					self.y += self.maxSpd;
+				if(self.y < (600 - self.maxSpeed) - 10) {
+					self.y += self.maxSpeed;
 				}
 			}
 		}
