@@ -72,7 +72,7 @@ var NPCShooter = function(id, x, y) {
 							dist[player.id] = d;
 						}
 					} else {
-						if(isOP(player)) {
+						if(isOverPower(player)) {
 							var d = getDistance(self.x, self.y, player.x, player.y);
 							dist[player.id] = d;
 						}
@@ -162,6 +162,7 @@ var NPCAttacker = function(id, x, y) {
 		}
 		if(self.hp <= 0) {
 			delete ATTACKER_LIST[self.id];
+			delete self;
 		}
 	}
 
@@ -483,7 +484,7 @@ function countActivePlayers() {
 	return result;
 }
 
-function isOP(player) {
+function isOverPower(player) {
 	var power = 0;
 	if(!(player.joinKickTimeout < 0 && player.spawnCooldown < 0)) {
 		power = -9000;
@@ -515,7 +516,7 @@ function countOPPlayers() {
 	var result = 0;
 	for(var p in PLAYER_LIST) {
 		var player = PLAYER_LIST[p];
-		if(isOP(player)) {
+		if(isOverPower(player)) {
 			result++;
 		}
 	}
