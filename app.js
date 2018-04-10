@@ -16,8 +16,9 @@ var fps = 30;
 //-------------------------------------
 
 var port = process.env.PORT || 80;
-if(process.env.PORT == undefined)
+if(process.env.PORT == undefined) {
 	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
+}
 
 serv.listen(port);
 var io = require("socket.io")(serv, {});
