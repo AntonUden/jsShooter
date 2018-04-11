@@ -90,10 +90,6 @@ var NPCShooter = function(id, x, y) {
 				} else {
 					self.targetPlayer = -1;
 				}
-
-				if(!(self.targetPlayer == -1)) {
-					
-				} else {}
 			} catch(err) {}
 		}
 		if(self.hp <= 0) {
