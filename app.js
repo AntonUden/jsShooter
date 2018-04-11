@@ -790,7 +790,7 @@ setInterval(function() {
 
 // Spawn blocks
 setInterval(function() {
-	if(Object.keys(BLOCK_LIST).length < 30) {
+	if(Object.keys(BLOCK_LIST).length <= 40) {
 		spawnBlock();
 	}
 }, 500);
