@@ -929,7 +929,6 @@ setInterval(function() {
 // Main update loop
 setInterval(function() {
 	try {
-		var pack = [];
 		var playerPack = [];
 		var bulletPack = [];
 		var blockPack = [];
