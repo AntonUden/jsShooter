@@ -627,6 +627,8 @@ io.sockets.on("connection", function(socket) {
 				return;
 			}
 
+			data.name = data.name.replace(/[\u{0080}-\u{FFFF}]/gu,"");
+
 			if(data.name.length > 16) { // Name is too long
 				return;
 			}
