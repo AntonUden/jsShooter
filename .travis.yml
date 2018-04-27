@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - "iojs"
   - "7"
+dist: trusty
 sudo: required
 cache:
   directories:
