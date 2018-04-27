@@ -4,6 +4,7 @@
   "description": "Nodejs game",
   "main": "app.js",
   "scripts": {
+    "test": "node --debug app.js",
     "start": "node app.js"
   },
   "repository": {

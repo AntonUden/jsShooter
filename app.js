@@ -4,6 +4,8 @@ var serv = require('http').Server(app);
 var colors = require('colors/safe');
 var middleware = require('socketio-wildcard')();
 
+var debug = typeof v8debug === 'object' || /--debug/.test(process.execArgv.join(' '));
+
 console.log(colors.green("[jsShooter] Starting server..."));
 app.get('/',function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
@@ -56,7 +58,11 @@ var NPCShooter = function(id, x, y) {
 			var bID = Math.random() * 200;
 			var target = PLAYER_LIST[self.targetPlayer];
 			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI, 1);
-		} catch(error) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	}
 
 	self.update = function() {
@@ -90,7 +96,11 @@ var NPCShooter = function(id, x, y) {
 				} else {
 					self.targetPlayer = -1;
 				}
-			} catch(err) {}
+			} catch(err) {
+				if(debug) {
+					throw err;
+				}
+			}
 		}
 		if(self.hp <= 0) {
 			delete NPCSHOOTER_LIST[self.id];
@@ -140,7 +150,11 @@ var NPCAttacker = function(id, x, y) {
  					}
  					
   				}
-			} catch(err) {}
+			} catch(err) {
+				if(debug) {
+					throw err;
+				}
+			}
 		}
 		if(self.attackCooldown > 0) {
 			self.attackCooldown--;
@@ -603,7 +617,11 @@ io.sockets.on("connection", function(socket) {
 			delete PLAYER_LIST[socket.id];
 			disconnectSocket(socket.id);
 			console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " disconnected"));
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on('keyPress',function(data){
@@ -616,7 +634,11 @@ io.sockets.on("connection", function(socket) {
 				player.pressingUp = data.state;
 			else if(data.inputId === 'down')
 				player.pressingDown = data.state;
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on('changeName', function(data) {
@@ -638,14 +660,22 @@ io.sockets.on("connection", function(socket) {
 				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
 				player.name = data.name;
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on('not afk', function(data) {
 		try {
 			var player = getPlayerByID(socket.id);
 			player.afkKickTimeout = 100;
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on('kthx',function(data){
@@ -655,14 +685,22 @@ io.sockets.on("connection", function(socket) {
 				player.joinKickTimeout = -1;
 				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " is now verified"));
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on("*", function(data) {
 		try {
 			SOCKET_ACTIVITY[socket.id]++;
 			//console.log(data);
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	// HP Upgrade
@@ -679,7 +717,11 @@ io.sockets.on("connection", function(socket) {
 					}
 				}
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	// Fire speed upgrade
@@ -699,7 +741,11 @@ io.sockets.on("connection", function(socket) {
 					}
 				}
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	// Bullet size upgrade
@@ -714,7 +760,11 @@ io.sockets.on("connection", function(socket) {
 					}
 				}
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});	
 
 	// Dual bullet upgrade
@@ -734,7 +784,11 @@ io.sockets.on("connection", function(socket) {
 					}
 				}
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 
 	socket.on('mouseMove',function(data){
@@ -744,7 +798,11 @@ io.sockets.on("connection", function(socket) {
 				player.mx = data.x;
 				player.my = data.y;
 			}
-		} catch(err) {}
+		} catch(err) {
+			if(debug) {
+				throw err;
+			}
+		}
 	});
 });
 
@@ -896,7 +954,11 @@ setInterval(function() {
 				player.hp = player.maxHp;
 			}
 		}
-	} catch(err) {};
+	} catch(err) {
+		if(debug) {
+			throw err;
+		}
+	};
 }, 1000);
 
 // Regen and kick loop
@@ -1029,6 +1091,9 @@ setInterval(function() {
 		}
 	} catch(err) {
 		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
+		if(debug) {
+			throw err;
+		}
 	}
 },(1000 / fps));
 
@@ -1135,4 +1200,8 @@ process.stdin.on('data', function (text) {
 for(var spBlock = 0; spBlock < 20; spBlock++) {
 	spawnBlock();
 }
+
 console.log(colors.green("[jsShooter] Server started "));
+if(debug) {
+	console.log("Running in debug mode");
+}
