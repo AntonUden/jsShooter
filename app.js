@@ -414,7 +414,7 @@ var PowerUp = function(x, y, id) {
 	self.update = function() {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
-			if(getDistance(self.x, self.y, player.x, player.y) < 10) {
+			if(getDistance(self.x, self.y, player.x, player.y) < 16) {
 				player.powerupTime += 20;
 				player.score += 500;
 				self.destroy();
