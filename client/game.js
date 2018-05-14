@@ -361,50 +361,87 @@ setInterval(function() {
 	colorBlink = Math.abs(Math.sin(new Date().getTime() / 700) * 1);
 }, 50);
 
+var keyRightDown, keyLeftDown, keyUpDown, keyDownDown = false;
+
 document.onkeydown = function(event) {
-	if (event.keyCode === 68) //d
+	if (event.keyCode === 68 && !keyRightDown) { //d
+		keyRightDown = true;
 		socket.emit('keyPress', {
-		inputId: 'right',
-		state: true
-	});
-	else if (event.keyCode === 83) //s
+			inputId: 'right',
+			state: true
+		});
+	} else if (event.keyCode === 83 && !keyDownDown) { //s
+		keyDownDown = true;
 		socket.emit('keyPress', {
-		inputId: 'down',
-		state: true
-	});
-	else if (event.keyCode === 65) //a
+			inputId: 'down',
+			state: true
+		});
+	} else if (event.keyCode === 65 && !keyLeftDown) { //a
+		keyLeftDown = true;
 		socket.emit('keyPress', {
-		inputId: 'left',
-		state: true
-	});
-	else if (event.keyCode === 87) // w
+			inputId: 'left',
+			state: true
+		});
+	} else if (event.keyCode === 87 && !keyUpDown) { // w
+		keyUpDown = true;
 		socket.emit('keyPress', {
-		inputId: 'up',
-		state: true
-	});
+			inputId: 'up',
+			state: true
+		});
+	}
 }
+
 document.onkeyup = function(event) {
-	if (event.keyCode === 68) //d
+	if (event.keyCode === 68) { //d
+		keyRightDown = false;
 		socket.emit('keyPress', {
+			inputId: 'right',
+			state: false
+		});
+	} else if (event.keyCode === 83) { //s
+		keyDownDown = false;
+		socket.emit('keyPress', {
+			inputId: 'down',
+			state: false
+		});
+	} else if (event.keyCode === 65) { //a
+		keyLeftDown = false;
+		socket.emit('keyPress', {
+			inputId: 'left',
+			state: false
+		});
+	} else if (event.keyCode === 87) { // w
+		keyUpDown = false;
+		socket.emit('keyPress', {
+			inputId: 'up',
+			state: false
+		});
+	}
+}
+
+window.onblur = function() {
+	keyRightDown = false;
+	keyLeftDown = false; 
+	keyUpDown = false;
+	keyDownDown = false;
+	
+	socket.emit('keyPress', {
 		inputId: 'right',
 		state: false
 	});
-	else if (event.keyCode === 83) //s
-		socket.emit('keyPress', {
-		inputId: 'down',
-		state: false
-	});
-	else if (event.keyCode === 65) //a
-		socket.emit('keyPress', {
+	socket.emit('keyPress', {
 		inputId: 'left',
 		state: false
 	});
-	else if (event.keyCode === 87) // w
-		socket.emit('keyPress', {
+	socket.emit('keyPress', {
 		inputId: 'up',
 		state: false
 	});
-}
+	socket.emit('keyPress', {
+		inputId: 'down',
+		state: false
+	});
+};
 
 try {
 	if(getCookie("jsshooter_name") != "") {
