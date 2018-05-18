@@ -37,7 +37,7 @@ var lmy = -1;
 var upgHP = 500;
 
 var uiVisible = false;
-var shooter_blink = true;
+var shooter_blink_state = true;
 var dead = false;
 var respawnCooldown = 0;
 var colorBlink = 0;
@@ -312,7 +312,7 @@ socket.on("newPositions", function(data) {
 		ctx.fillRect(data.shooters[i].x - 5, data.shooters[i].y - 5, 10, 10);
 		ctx.fillStyle = ("rgba(" + (255 - (data.shooters[i].activationTimer * 3)) + ", " + (255 - (data.shooters[i].activationTimer * 3)) + ", 0, 1)");
 		if (data.shooters[i].target == id) {
-			if (shooter_blink) {
+			if (shooter_blink_state) {
 				ctx.fillStyle = "#880000";
 			}
 		}
@@ -354,7 +354,7 @@ setInterval(function() {
 }, 50);
 
 setInterval(function() {
-	shooter_blink = !shooter_blink;
+	shooter_blink_state = !shooter_blink_state;
 }, 500);
 
 setInterval(function() {
