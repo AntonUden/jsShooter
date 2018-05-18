@@ -506,10 +506,10 @@ function isOverPower(player) {
 	if(player.doubleBulletSize) {
 		power++;
 	}
-	if(player.quadrupleFireSpeed) {
+	if(player.dualBullets) {
 		power++;
 	}
-	if(player.doubleBulletSize) {
+	if(player.quadrupleBullets) {
 		power++;
 	}
 
