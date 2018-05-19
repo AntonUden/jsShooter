@@ -38,12 +38,12 @@ html {
 	transition-timing-function: ease-in-out;
 }
 #uiDiv:hover {
-	background-color: rgba(220,255,255,0.5);
+	background-color: rgba(240,255,255,0.8);
 	transition: 1s;
 }
 
 #menuTextDiv:hover {
-	background-color: rgba(230,255,230,0.8);
+	background-color: rgba(240,255,240,0.8);
 	transition: 1s;
 	transition-timing-function: ease-in-out;
 }
