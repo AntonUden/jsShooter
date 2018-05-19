@@ -217,31 +217,32 @@ socket.on("newPositions", function(data) {
 	}
 
 	for (var i = 0; i < data.players.length; i++) {
-		if (data.players[i].id == id) {
+		var playerTextColor = "#000000";
+
+		// Get player stats
+		if(data.players[i].id == id) {
 			var status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 			document.getElementById("powerupCountdownTimer").innerHTML = data.players[i].powerupTime;
-			document.getElementById("powerupCountdown").style.visibility = 'visible';
-			if (data.players[i].powerupTime > 0) {
-				ctx.strokeStyle = "rgba(0, 0, 255, " + (1 - colorBlink) + ")";
-				ctx.beginPath();
-				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
-				ctx.stroke();
-				ctx.strokeStyle = "rgba(0, 255, 0, " + (1 - colorBlink) + ")";
-				ctx.beginPath();
-				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.cos(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
-				ctx.stroke();
-				ctx.fillStyle = "rgba(0, 255, 255, " + (1 - colorBlink) + ")";
-			} else {
+			if(!data.players[i].powerupTime > 1) {
 				document.getElementById("powerupCountdown").style.visibility = 'hidden';
-				ctx.fillStyle = "rgba(0, 255, 255, 1)";
 			}
-			dead = false;
 			if (data.players[i].spawnCooldown > -1) {
 				dead = true;
 				respawnCooldown = data.players[i].spawnCooldown;
+			} else {
+				dead = false;
 			}
-		} else {
-			if (data.players[i].powerupTime > 0) {
+		}
+
+		// Check if player is visible
+		if (data.players[i].spawnCooldown < 0) {
+			// Draw border
+			ctx.fillStyle = "#000000";
+			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
+
+			// Player has powerup
+			if(data.players[i].powerupTime > 0) {
+				playerTextColor = "rgba(0, 0, 0, " + (1 - colorBlink) + ")";
 				ctx.strokeStyle = "rgba(0, 0, 255, " + (1 - colorBlink) + ")";
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
@@ -250,21 +251,31 @@ socket.on("newPositions", function(data) {
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.cos(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
 				ctx.stroke();
-				ctx.fillStyle = "rgba(255, 0, 0, " + (1 - colorBlink) + ")";
+				if(data.players[i].id == id) {
+					ctx.fillStyle = "rgba(0, 255, 255, " + (1 - colorBlink) + ")";
+					document.getElementById("powerupCountdown").style.visibility = 'visible';
+				} else {
+					ctx.fillStyle = "rgba(255, 0, 0, 1)";
+				}
 			} else {
-				ctx.fillStyle = "rgba(255, 0, 0, 1)";
+				// No powerup =(
+				if(data.players[i].id == id) {
+					ctx.fillStyle = "rgba(0, 255, 255, 1";
+				} else {
+					ctx.fillStyle = "rgba(255, 0, 0, 1)";
+				}
 			}
-		}
-		if (data.players[i].spawnCooldown < 0) {
-			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
-			ctx.fillStyle = "#000000";
+
+			// Draw player
+			ctx.fillRect(data.players[i].x - 5, data.players[i].y - 5, 10, 10);
+			ctx.fillStyle = playerTextColor;
 			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 20);
 			ctx.fillText(data.players[i].hp + " HP", data.players[i].x, data.players[i].y - 8);
 		}
 	}
 
 	for (var i = 0; i < data.powerups.length; i++) {
-		ctx.strokeStyle = "blue";
+		ctx.strokeStyle = "#0000FF";
 		ctx.beginPath();
 		ctx.arc(data.powerups[i].x, data.powerups[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
 		ctx.stroke();
