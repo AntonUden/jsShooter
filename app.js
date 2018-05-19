@@ -200,8 +200,8 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 		for(var p in PLAYER_LIST) {
 			var player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-				if (self.x >= (player.x - 8) - extraSize && self.x <= player.x + 8 + extraSize) {
-					if (self.y >= (player.y - 8) - extraSize && self.y <= player.y + 8) {
+				if (self.x >= (player.x - 9) - extraSize && self.x <= player.x + 9 + extraSize) {
+					if (self.y >= (player.y - 9) - extraSize && self.y <= player.y + 9) {
 						if(!(self.owner == player.id)) {
 							if(!(player.powerupTime > 0)) player.hp--;
 							var owner = getPlayerByID(self.owner);
@@ -506,10 +506,10 @@ function isOverPower(player) {
 	if(player.doubleBulletSize) {
 		power++;
 	}
-	if(player.quadrupleFireSpeed) {
+	if(player.dualBullets) {
 		power++;
 	}
-	if(player.doubleBulletSize) {
+	if(player.quadrupleBullets) {
 		power++;
 	}
 
