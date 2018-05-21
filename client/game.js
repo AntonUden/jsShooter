@@ -10,10 +10,10 @@ ctx.fillStyle = "#FFFFFF";
 ctx.fillRect(0, 0, 1200, 600);
 ctx.fillStyle = "#BBBBBB";
 
-for (var bgLineX = 0; bgLineX < 1200; bgLineX += 20) {
+for (let bgLineX = 0; bgLineX < 1200; bgLineX += 20) {
 	ctx.fillRect(bgLineX, 0, 1, 600);
 }
-for (var bgLineY = 0; bgLineY < 600; bgLineY += 20) {
+for (let bgLineY = 0; bgLineY < 600; bgLineY += 20) {
 	ctx.fillRect(0, bgLineY, 1200, 1);
 }
 ctx.fillStyle = "#000000";
@@ -68,7 +68,7 @@ function upgradeHP() {
 function changeName() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		var name = "" + document.getElementById("nameInput").value;
+		let name = "" + document.getElementById("nameInput").value;
 		if (name == "") {
 			name = "Unnamed";
 		}
@@ -124,7 +124,7 @@ function mouseMove(e) {
 }
 
 function unfocus() {
-	var tmp = document.createElement("input");
+	let tmp = document.createElement("input");
 	document.body.appendChild(tmp);
 	tmp.focus();
 	document.body.removeChild(tmp);
@@ -208,20 +208,20 @@ socket.on("newPositions", function(data) {
 	ctx.fillStyle = "#BBBBBB";
 	ctx.font = "15px Arial";
 
-	for (var bgLineX = 0; bgLineX < 1200; bgLineX += 20) {
+	for (let bgLineX = 0; bgLineX < 1200; bgLineX += 20) {
 		ctx.fillRect(bgLineX, 0, 1, 600);
 	}
 
-	for (var bgLineY = 0; bgLineY < 600; bgLineY += 20) {
+	for (let bgLineY = 0; bgLineY < 600; bgLineY += 20) {
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
 
-	for (var i = 0; i < data.players.length; i++) {
-		var playerTextColor = "#000000";
+	for (let i = 0; i < data.players.length; i++) {
+		let playerTextColor = "#000000";
 
 		// Get player stats
 		if(data.players[i].id == id) {
-			var status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
+			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 			document.getElementById("powerupCountdownTimer").innerHTML = data.players[i].powerupTime;
 			if(!data.players[i].powerupTime > 1) {
 				document.getElementById("powerupCountdown").style.visibility = 'hidden';
@@ -274,7 +274,7 @@ socket.on("newPositions", function(data) {
 		}
 	}
 
-	for (var i = 0; i < data.powerups.length; i++) {
+	for (let i = 0; i < data.powerups.length; i++) {
 		ctx.strokeStyle = "#0000FF";
 		ctx.beginPath();
 		ctx.arc(data.powerups[i].x, data.powerups[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
@@ -287,17 +287,17 @@ socket.on("newPositions", function(data) {
 		ctx.fillText("Powerup", data.powerups[i].x, data.powerups[i].y - 10);
 	}
 
-	for (var i = 0; i < data.bullets.length; i++) {
+	for (let i = 0; i < data.bullets.length; i++) {
 		ctx.fillStyle = "#000000";
 		ctx.beginPath();
-		var renderSize = 2;
+		let renderSize = 2;
 		if (data.bullets[i].size > 1) renderSize = 3;
 		ctx.arc(data.bullets[i].x - (renderSize / 2), data.bullets[i].y - (renderSize / 2), renderSize, 0, Math.PI * 2, true);
 		ctx.closePath();
 		ctx.fill();
 	}
 
-	for (var i = 0; i < data.blocks.length; i++) {
+	for (let i = 0; i < data.blocks.length; i++) {
 		ctx.beginPath();
 		ctx.fillStyle = "#000000";
 		ctx.fillRect(data.blocks[i].x - 6, data.blocks[i].y - 6, 12, 12);
@@ -307,7 +307,7 @@ socket.on("newPositions", function(data) {
 		ctx.fill();
 	}
 
-	for (var i = 0; i < data.attackers.length; i++) {
+	for (let i = 0; i < data.attackers.length; i++) {
 		ctx.beginPath();
 		ctx.fillStyle = "#0000FF";
 		ctx.fillRect(data.attackers[i].x - 5, data.attackers[i].y - 5, 10, 10);
@@ -317,7 +317,7 @@ socket.on("newPositions", function(data) {
 		ctx.fill();
 	}
 
-	for (var i = 0; i < data.shooters.length; i++) {
+	for (let i = 0; i < data.shooters.length; i++) {
 		ctx.beginPath();
 		ctx.fillStyle = "#FF0000";
 		ctx.fillRect(data.shooters[i].x - 5, data.shooters[i].y - 5, 10, 10);
@@ -354,7 +354,7 @@ setInterval(function() {
 // Sends mouse position to the server 20 times per second
 setInterval(function() {
 	if(!(lmx == mx && lmy == my)) {
-		var pack = {
+		let pack = {
 			x: mx,
 			y: my
 		};
