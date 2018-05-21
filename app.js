@@ -1188,7 +1188,7 @@ process.stdin.on('data', function (text) {
 		console.log(colors.yellow("kick <id>         Kick player"));
 		console.log(colors.yellow("spawnPowerup      Spawns a powerup"));
 		console.log(colors.yellow("name <id> <name>  Change name of player"));
-		console.log(colors.yellow("maxsocactivity n  socket gets kicked if it sends more then n messages per second"));
+		console.log(colors.yellow("maxSocActivity n  socket gets kicked if it sends more then n messages per second"));
 	} else {
 		console.log(colors.yellow("Unknown command type help for help"));
 	}
