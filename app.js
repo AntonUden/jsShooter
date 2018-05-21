@@ -1034,8 +1034,7 @@ setInterval(function() {
 			bulletPack.push({
 				size:bullet.size,
 				x:bullet.x,
-				y:bullet.y,
-				id:bullet.id,
+				y:bullet.y
 			});
 		}
 
