@@ -88,7 +88,7 @@ var NPCShooter = function(id, x, y) {
 				var target = getSmallest(dist);
 				if(!(target == undefined)) {
 					self.targetPlayer = target;
-					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 50 && countOPPlayers() < 1) {
+					if(getDistance(self.x, self.y, PLAYER_LIST[self.targetPlayer].x, PLAYER_LIST[self.targetPlayer].y) > 200 && countOPPlayers() < 1) {
  						var dir = Math.atan2(PLAYER_LIST[self.targetPlayer].y - self.y, PLAYER_LIST[self.targetPlayer].x - self.x) * 180 / Math.PI;
  						self.x += Math.cos(dir/180*Math.PI) * 0.5;
  						self.y += Math.sin(dir/180*Math.PI) * 0.5;
