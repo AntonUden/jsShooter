@@ -222,6 +222,7 @@ socket.on("newPositions", function(data) {
 		// Get player stats
 		if(data.players[i].id == id) {
 			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
+			scoreDiv.innerHTML = status;
 			document.getElementById("powerupCountdownTimer").innerHTML = data.players[i].powerupTime;
 			if(!data.players[i].powerupTime > 1) {
 				document.getElementById("powerupCountdown").style.visibility = 'hidden';
@@ -331,8 +332,6 @@ socket.on("newPositions", function(data) {
 		ctx.closePath();
 		ctx.fill();
 	}
-
-	scoreDiv.innerHTML = status;
 
 	if (dead) {
 		document.getElementById("death").style.display = 'inline';
