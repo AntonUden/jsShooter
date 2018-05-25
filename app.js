@@ -359,7 +359,7 @@ var Player = function(id) {
 		self.dualBullets = false;
 		self.quadrupleBullets = false;
 		self.upgHPPrice = 500;
-		self.spawnCooldown = 20;
+		self.spawnCooldown = 10;
 	}
 
 	self.fireBullet = function() {
@@ -383,7 +383,7 @@ var Player = function(id) {
 
 	self.update = function() {
 		if(self.powerupTime > 0) {
-			self.maxSpeed = 6;
+			self.maxSpeed = 4;
 		} else {
 			self.maxSpeed = 3;
 		}
@@ -429,7 +429,7 @@ var PowerUp = function(x, y, id) {
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
 			if(getDistance(self.x, self.y, player.x, player.y) < 16) {
-				player.powerupTime += 20;
+				player.powerupTime += 10;
 				player.score += 500;
 				self.destroy();
 			}
@@ -818,7 +818,7 @@ setInterval(function() {
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
 			if(player.joinKickTimeout < 0 && player.spawnCooldown < 0) {
-				if(player.doubleFireSpeed) {
+				if(player.doubleFireSpeed || player.powerupTime > 0) {
 					player.fireBullet();
 				}
 			}

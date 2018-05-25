@@ -224,7 +224,7 @@ socket.on("newPositions", function(data) {
 			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 			scoreDiv.innerHTML = status;
 			document.getElementById("powerupCountdownTimer").innerHTML = data.players[i].powerupTime;
-			if(!data.players[i].powerupTime > 1) {
+			if(data.players[i].powerupTime < 0) {
 				document.getElementById("powerupCountdown").style.visibility = 'hidden';
 			}
 			if (data.players[i].spawnCooldown > -1) {
