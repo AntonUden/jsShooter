@@ -237,13 +237,14 @@ socket.on("newPositions", function(data) {
 
 		// Check if player is visible
 		if (data.players[i].spawnCooldown < 0) {
-			// Draw border
-			ctx.fillStyle = "#000000";
-			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
-
 			// Player has powerup
 			if(data.players[i].powerupTime > 0) {
 				playerTextColor = "rgba(0, 0, 0, " + (1 - colorBlink) + ")";
+				// Draw border
+				ctx.fillStyle = playerTextColor;
+				ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
+
+				// Draw player
 				ctx.strokeStyle = "rgba(0, 0, 255, " + (1 - colorBlink) + ")";
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
@@ -260,6 +261,9 @@ socket.on("newPositions", function(data) {
 				}
 			} else {
 				// No powerup =(
+				// Draw border
+				ctx.fillStyle = "#000000";
+				ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
 				if(data.players[i].id == id) {
 					ctx.fillStyle = "rgba(0, 255, 255, 1";
 				} else {
@@ -269,6 +273,7 @@ socket.on("newPositions", function(data) {
 
 			// Draw player
 			ctx.fillRect(data.players[i].x - 5, data.players[i].y - 5, 10, 10);
+			// Draw player text
 			ctx.fillStyle = playerTextColor;
 			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 20);
 			ctx.fillText(data.players[i].hp + " HP", data.players[i].x, data.players[i].y - 8);
