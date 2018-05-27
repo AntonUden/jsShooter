@@ -310,7 +310,7 @@ var Player = function(id) {
 		id:id,
 		spawnCooldown:-1,
 		afkKickTimeout:100,
-		joinKickTimeout:30,
+		joinKickTimeout:80,
 		pressingRight:false,
 		pressingLeft:false,
 		pressingUp:false,
