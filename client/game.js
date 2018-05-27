@@ -216,9 +216,7 @@ socket.on("newPositions", function(data) {
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
 
-	for (let i = 0; i < data.players.length; i++) {
-		let playerTextColor = "#000000";
-
+	for(let i = 0; i < data.players.length; i++) {
 		// Get player stats
 		if(data.players[i].id == id) {
 			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
@@ -235,44 +233,41 @@ socket.on("newPositions", function(data) {
 			}
 		}
 
-		// Check if player is visible
-		if (data.players[i].spawnCooldown < 0) {
-			// Player has powerup
-			if(data.players[i].powerupTime > 0) {
-				playerTextColor = "rgba(0, 0, 0, " + (1 - colorBlink) + ")";
-				// Draw border
-				ctx.fillStyle = playerTextColor;
-				ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
+		if(data.players[i].spawnCooldown < 0) {
+			let playerAlpha = 1;
+			let playerTextColor;
 
-				// Draw player
-				ctx.strokeStyle = "rgba(0, 0, 255, " + (1 - colorBlink) + ")";
+			if(data.players[i].powerupTime > 0) {
+				playerAlpha = 1 - colorBlink;
+				
+				ctx.strokeStyle = "rgba(0, 0, 255, " + playerAlpha + ")";
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
 				ctx.stroke();
-				ctx.strokeStyle = "rgba(0, 255, 0, " + (1 - colorBlink) + ")";
+				ctx.strokeStyle = "rgba(0, 255, 0, " + playerAlpha + ")";
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.cos(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
 				ctx.stroke();
+
 				if(data.players[i].id == id) {
-					ctx.fillStyle = "rgba(0, 255, 255, " + (1 - colorBlink) + ")";
 					document.getElementById("powerupCountdown").style.visibility = 'visible';
-				} else {
-					ctx.fillStyle = "rgba(255, 0, 0, 1)";
-				}
-			} else {
-				// No powerup =(
-				// Draw border
-				ctx.fillStyle = "#000000";
-				ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
-				if(data.players[i].id == id) {
-					ctx.fillStyle = "rgba(0, 255, 255, 1";
-				} else {
-					ctx.fillStyle = "rgba(255, 0, 0, 1)";
 				}
 			}
 
-			// Draw player
+			if(data.players[i].id == id) {
+				playerTextColor = "rgba(0, 160, 0, " + playerAlpha + ")";
+			} else {
+				playerTextColor = "rgba(255, 0, 0, " + playerAlpha + ")";
+			}
+
+			// Player border
+			ctx.fillStyle = "rgba(0, 0, 0, " + playerAlpha + ")";
+			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
+			// Player
+			ctx.fillStyle = "hsla(" + data.players[i].color + ", 100%, 50%, " + playerAlpha + ")";
+			console.log("hsla(" + data.players[i].color + ", 100%, 50%, " + playerAlpha + ")");
 			ctx.fillRect(data.players[i].x - 5, data.players[i].y - 5, 10, 10);
+
 			// Draw player text
 			ctx.fillStyle = playerTextColor;
 			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 20);

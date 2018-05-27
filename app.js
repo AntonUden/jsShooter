@@ -317,6 +317,7 @@ var Player = function(id) {
 		pressingDown:false,
 		maxHp:10,
 		hp:10,
+		color: Math.floor(Math.random() * 360),
 		regen:-1,
 		afk:false,
 		mx:0,
@@ -1008,6 +1009,7 @@ setInterval(function() {
 				playerPack.push({
 					x:player.x,
 					y:player.y,
+					color:player.color,
 					name:player.name,
 					hp:player.hp,
 					maxHp:player.maxHp,
