@@ -265,7 +265,6 @@ socket.on("newPositions", function(data) {
 			ctx.fillRect(data.players[i].x - 7, data.players[i].y - 7, 14, 14);
 			// Player
 			ctx.fillStyle = "hsla(" + data.players[i].color + ", 100%, 50%, " + playerAlpha + ")";
-			console.log("hsla(" + data.players[i].color + ", 100%, 50%, " + playerAlpha + ")");
 			ctx.fillRect(data.players[i].x - 5, data.players[i].y - 5, 10, 10);
 
 			// Draw player text
