@@ -17,6 +17,7 @@ for (let bgLineY = 0; bgLineY < 600; bgLineY += 20) {
 	ctx.fillRect(0, bgLineY, 1200, 1);
 }
 ctx.fillStyle = "#000000";
+
 ctx.fillText("No game data =(", 600, 300);
 ctx.font = "30px Arial";
 ctx.fillText("Try reloading the page.", 600, 330);
@@ -298,27 +299,20 @@ socket.on("newPositions", function(data) {
 	}
 
 	for (let i = 0; i < data.blocks.length; i++) {
-		ctx.beginPath();
 		ctx.fillStyle = "#000000";
 		ctx.fillRect(data.blocks[i].x - 6, data.blocks[i].y - 6, 12, 12);
 		ctx.fillStyle = "#00FF00";
 		ctx.fillRect(data.blocks[i].x - 4, data.blocks[i].y - 4, 8, 8);
-		ctx.closePath();
-		ctx.fill();
 	}
 
 	for (let i = 0; i < data.attackers.length; i++) {
-		ctx.beginPath();
 		ctx.fillStyle = "#0000FF";
 		ctx.fillRect(data.attackers[i].x - 5, data.attackers[i].y - 5, 10, 10);
 		ctx.fillStyle = ("rgba(" + (255 - (data.attackers[i].activationTimer * 3)) + ", 0, 0, 1)");
 		ctx.fillRect(data.attackers[i].x - 3, data.attackers[i].y - 3, 6, 6);
-		ctx.closePath();
-		ctx.fill();
 	}
 
 	for (let i = 0; i < data.shooters.length; i++) {
-		ctx.beginPath();
 		ctx.fillStyle = "#FF0000";
 		ctx.fillRect(data.shooters[i].x - 5, data.shooters[i].y - 5, 10, 10);
 		ctx.fillStyle = ("rgba(" + (255 - (data.shooters[i].activationTimer * 3)) + ", " + (255 - (data.shooters[i].activationTimer * 3)) + ", 0, 1)");
@@ -328,8 +322,6 @@ socket.on("newPositions", function(data) {
 			}
 		}
 		ctx.fillRect(data.shooters[i].x - 3, data.shooters[i].y - 3, 6, 6);
-		ctx.closePath();
-		ctx.fill();
 	}
 
 	if (dead) {
