@@ -365,25 +365,25 @@ setInterval(function() {
 var keyRightDown, keyLeftDown, keyUpDown, keyDownDown = false;
 
 document.onkeydown = function(event) {
-	if (event.keyCode === 68 && !keyRightDown) { //d
+	if ((event.keyCode === 68 || event.keyCode === 39) && !keyRightDown) { //d
 		keyRightDown = true;
 		socket.emit('keyPress', {
 			inputId: 'right',
 			state: true
 		});
-	} else if (event.keyCode === 83 && !keyDownDown) { //s
+	} else if ((event.keyCode === 83 || event.keyCode === 40) && !keyDownDown) { //s
 		keyDownDown = true;
 		socket.emit('keyPress', {
 			inputId: 'down',
 			state: true
 		});
-	} else if (event.keyCode === 65 && !keyLeftDown) { //a
+	} else if ((event.keyCode === 65 || event.keyCode === 37) && !keyLeftDown) { //a
 		keyLeftDown = true;
 		socket.emit('keyPress', {
 			inputId: 'left',
 			state: true
 		});
-	} else if (event.keyCode === 87 && !keyUpDown) { // w
+	} else if ((event.keyCode === 87 || event.keyCode === 38) && !keyUpDown) { // w
 		keyUpDown = true;
 		socket.emit('keyPress', {
 			inputId: 'up',
@@ -393,25 +393,25 @@ document.onkeydown = function(event) {
 }
 
 document.onkeyup = function(event) {
-	if (event.keyCode === 68) { //d
+	if (event.keyCode === 68 || event.keyCode === 39) { //d
 		keyRightDown = false;
 		socket.emit('keyPress', {
 			inputId: 'right',
 			state: false
 		});
-	} else if (event.keyCode === 83) { //s
+	} else if (event.keyCode === 83 || event.keyCode === 40) { //s
 		keyDownDown = false;
 		socket.emit('keyPress', {
 			inputId: 'down',
 			state: false
 		});
-	} else if (event.keyCode === 65) { //a
+	} else if (event.keyCode === 65 || event.keyCode === 37) { //a
 		keyLeftDown = false;
 		socket.emit('keyPress', {
 			inputId: 'left',
 			state: false
 		});
-	} else if (event.keyCode === 87) { // w
+	} else if (event.keyCode === 87 || event.keyCode === 38) { // w
 		keyUpDown = false;
 		socket.emit('keyPress', {
 			inputId: 'up',
