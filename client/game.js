@@ -269,7 +269,7 @@ socket.on("newPositions", function(data) {
 
 			// Draw player text
 			ctx.fillStyle = playerTextColor;
-			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 20);
+			ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y - 24);
 			ctx.fillText(data.players[i].hp + " HP", data.players[i].x, data.players[i].y - 8);
 		}
 	}
