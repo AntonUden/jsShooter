@@ -25,7 +25,7 @@ ctx.fillText("Try reloading the page.", 600, 330);
 ctx.font = "10px Arial";
 setTimeout(function() {
 	uiDiv.style.height = "0px";
-	document.getElementById("menuTextDiv").style.height = "20px";
+	$("#menuTextDiv").height("20px");
 }, 500);
 
 var socket = io();
@@ -53,23 +53,23 @@ socket.on("id", function(data) {
 
 function nameInputKeydown(event) {
 	if (event.keyCode == 13) {
-		document.getElementById('setName').click();
+		$('#setName').click();
 	}
 }
 
-function upgradeHP() {
+$("#upgradehp").click(function() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
 		setTimeout(function() {
 			socket.emit("upgHPClicked");
 		}, 100);
 	}
-}
+});
 
 function changeName() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		let name = "" + document.getElementById("nameInput").value;
+		let name = "" + $("#nameInput").val();
 		if (name == "") {
 			name = "Unnamed";
 		}
@@ -78,48 +78,52 @@ function changeName() {
 			name: name
 		});
 		setCookie("jsshooter_name", name, 60);
-		document.getElementById("nameInput").value = name;
+		$("#nameInput").val(name);
 	}
 }
 
-function dualBullets() {
+$("#setName").click(function() {
+	changeName();
+});
+
+$("#upgradedb").click(function() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
 		setTimeout(function() {
 			socket.emit("upgDualBullets");
 		}, 100);
 	}
-}
+});
 
-function upgradeBulletSize() {
+$("#upgradeBulletSize").click(function() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
 		setTimeout(function() {
 			socket.emit("upgBulletSize");
 		}, 100);
 	}
-}
+});
 
-function doubleFireSpeed() {
+$("#upgradefs").click(function() {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
 		setTimeout(function() {
 			socket.emit("upgFSpeedClicked");
 		}, 100);
 	}
-}
+});
 
 function mouseMove(e) {
 	mx = Math.round(e.clientX / window.innerWidth * 1200);
 	my = Math.round(e.clientY / window.innerHeight * 600);
-	if (e.clientY < window.innerHeight - 70 && uiVisible && !document.getElementById("mlock").checked) {
+	if (e.clientY < window.innerHeight - 70 && uiVisible && !$("#mlock").prop('checked')) {
 		unfocus();
 		uiVisible = false;
 		uiDiv.style.height = "0px";
-		document.getElementById("menuTextDiv").style.height = "20px";
+		$("#menuTextDiv").height("20px");
 	} else if (e.clientY > window.innerHeight - 40 && !uiVisible) {
 		uiVisible = true;
-		document.getElementById("menuTextDiv").style.height = "0px";
+		$("#menuTextDiv").height("0px");
 		uiDiv.style.height = "55px";
 	}
 }
@@ -137,66 +141,66 @@ socket.on("afk?", function(data) {
 
 socket.on("price", function(data) {
 	upgHP = data.upgHP;
-	document.getElementById("upgradehp").innerHTML = "Upgrade HP (" + upgHP + ")";
+	$("#upgradehp").html("Upgrade HP (" + upgHP + ")");
 	if (data.score >= upgHP && !dead) {
-		document.getElementById("upgradehp").disabled = false;
+		$("#upgradehp").prop("disabled", false);
 	} else {
-		document.getElementById("upgradehp").disabled = true;
+		$("#upgradehp").prop("disabled", true);
 	}
 
 	if (data.doubleFireSpeed == true) {
 		if (data.quadrupleFireSpeed == true) {
-			document.getElementById("upgradefs").innerHTML = "Quadruple fire speed";
-			document.getElementById("upgradefs").disabled = true;
+			$("#upgradefs").html("Quadruple fire speed");
+			$("#upgradefs").prop("disabled", true);
 		} else {
-			document.getElementById("upgradefs").innerHTML = "Quadruple fire speed (8000)";
+			$("#upgradefs").html("Quadruple fire speed (8000)");
 			if (data.score >= 8000 && !dead) {
-				document.getElementById("upgradefs").disabled = false;
+				$("#upgradefs").prop("disabled", false);
 			} else {
-				document.getElementById("upgradefs").disabled = true;
+				$("#upgradefs").prop("disabled", true);
 			}
 		}
 	} else {
-		document.getElementById("upgradefs").innerHTML = "Double fire speed (2000)";
+		$("#upgradefs").html("Double fire speed (2000)");
 		if (data.score >= 2000 && !dead) {
-			document.getElementById("upgradefs").disabled = false;
+			$("#upgradefs").prop("disabled", false);
 		} else {
-			document.getElementById("upgradefs").disabled = true;
+			$("#upgradefs").prop("disabled", true);
 		}
 	}
 
 
 	if (data.doubleBulletSize) {
-		document.getElementById("upgradeBulletSize").disabled = true;
-		document.getElementById("upgradeBulletSize").innerHTML = "Upgrade bullet size";
+		$("#upgradeBulletSize").prop("disabled", true);
+		$("#upgradeBulletSize").html("Upgrade bullet size");
 	} else {
-		document.getElementById("upgradeBulletSize").innerHTML = "Upgrade bullet size (5000)";
+		$("#upgradeBulletSize").html("Upgrade bullet size (5000)");
 		if (data.score >= 5000 && !dead) {
-			document.getElementById("upgradeBulletSize").disabled = false;
+			$("#upgradeBulletSize").prop("disabled", false);
 		} else {
-			document.getElementById("upgradeBulletSize").disabled = true;
+			$("#upgradeBulletSize").prop("disabled", true);
 		}
 	}
 
 	if (data.dualBullets == true) {
 		if (data.quadrupleBullets) {
-			document.getElementById("upgradedb").disabled = true;
-			document.getElementById("upgradedb").innerHTML = "Quadruple bullets";
+			$("#upgradedb").prop("disabled", true);
+			$("#upgradedb").html("Quadruple bullets");
 		} else {
-			document.getElementById("upgradedb").disabled = true;
-			document.getElementById("upgradedb").innerHTML = "Quadruple bullets (8000)";
+			$("#upgradedb").prop("disabled", true);
+			$("#upgradedb").html("Quadruple bullets (8000)");
 			if (data.score >= 8000 && !dead) {
-				document.getElementById("upgradedb").disabled = false;
+				$("#upgradedb").prop("disabled", false);
 			} else {
-				document.getElementById("upgradedb").disabled = true;
+				$("#upgradedb").prop("disabled", true);
 			}
 		}
 	} else {
-		document.getElementById("upgradedb").innerHTML = "Dual bullets (5000)";
+		$("#upgradedb").html("Dual bullets (5000)");
 		if (data.score >= 5000 && !dead) {
-			document.getElementById("upgradedb").disabled = false;
+			$("#upgradedb").prop("disabled", false);
 		} else {
-			document.getElementById("upgradedb").disabled = true;
+			$("#upgradedb").prop("disabled", true);
 		}
 	}
 });
@@ -222,9 +226,9 @@ socket.on("newPositions", function(data) {
 		if(data.players[i].id == id) {
 			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 			scoreDiv.innerHTML = status;
-			document.getElementById("powerupCountdownTimer").innerHTML = data.players[i].powerupTime;
+			$("#powerupCountdownTimer").html(data.players[i].powerupTime);
 			if(data.players[i].powerupTime < 0) {
-				document.getElementById("powerupCountdown").style.visibility = 'hidden';
+				$("#powerupCountdown").hide();
 			}
 			if (data.players[i].spawnCooldown > -1) {
 				dead = true;
@@ -251,7 +255,7 @@ socket.on("newPositions", function(data) {
 				ctx.stroke();
 
 				if(data.players[i].id == id) {
-					document.getElementById("powerupCountdown").style.visibility = 'visible';
+					$("#powerupCountdown").show();
 				}
 			}
 
@@ -325,10 +329,10 @@ socket.on("newPositions", function(data) {
 	}
 
 	if (dead) {
-		document.getElementById("death").style.display = 'inline';
+		$("#death").show();
 		countdownDiv.innerHTML = "Respawn in " + respawnCooldown;
 	} else {
-		document.getElementById("death").style.display = 'none';
+		$("#death").hide();
 	}
 });
 
@@ -450,8 +454,8 @@ try {
 			console.error("[Warning] Name stored in cookie is too long. resetting to Unnamed");
 			setCookie("jsshooter_name", "Unnamed", 360);
 		}
-		document.getElementById("nameInput").value = getCookie("jsshooter_name");
-		document.getElementById('setName').click();
+		$("#nameInput").val(getCookie("jsshooter_name"));
+		$('#setName').click();
 	} else {
 		setCookie("jsshooter_name", "Unnamed", 360);
 	}
