@@ -1,7 +1,7 @@
 {
   "name": "jsShooter",
   "version": "1.0.0",
-  "description": "Nodejs game",
+  "description": "Nodejs and html5 game",
   "main": "app.js",
   "scripts": {
     "test": "node --debug --use_strict app.js",
