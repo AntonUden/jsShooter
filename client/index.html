@@ -32,17 +32,18 @@
 			Menu
 		</div>
 		<div id="uiDiv" class="noselect">
-			<button class="shadow" onclick="doubleFireSpeed()" disabled="true" id="upgradefs">Double fire speed (2000)</button>
-			<button class="shadow" onclick="dualBullets()" disabled="true" id="upgradedb">Dual bullets (5000)</button>
-			<button class="shadow" onclick="upgradeHP()" disabled="true" id="upgradehp">Upgrade HP (500)</button>
-			<button class="shadow" onclick="upgradeBulletSize()" disabled="true" id="upgradeBulletSize">Upgrade bullet size (5000)</button>
+			<button class="shadow" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+			<button class="shadow" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+			<button class="shadow" disabled="true" id="upgradehp">Upgrade HP (500)</button>
+			<button class="shadow" disabled="true" id="upgradeBulletSize">Upgrade bullet size (5000)</button>
 			<input type="checkbox" id="mlock">Lock menu
 			<br>
 			<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
-			<button class="shadow" id="setName" onclick="changeName()">Set name</button>
+			<button class="shadow" id="setName">Set name</button>
 			<a href="https://github.com/Zeeraa/jsShooter" target="_blank">Source code</a>
 		</div>
 
+		<script src="/client/jquery-3.3.1.min.js"></script>
 		<script src="/client/socket.io.js"></script>
 		<script src="/client/cookies.js"></script>
 		<script src="/client/game.js"></script>
