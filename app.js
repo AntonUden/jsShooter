@@ -19,7 +19,7 @@ var fps = 30;
 
 var port = process.env.PORT || 80;
 if(process.env.PORT == undefined) {
-	console.log(colors.blue("[jsShooter] no port defined using default (80)"));
+	console.log(colors.blue("[jsShooter] No port defined using default (80)"));
 }
 
 serv.listen(port);
