@@ -503,7 +503,7 @@ function getSmallest(obj) {
 //Name: countActivePlayers
 //Description: Go through the list of players and find out which players are still players
 //if the player is has died, they should not be included in this list
-//Return: the number of active players
+//Return: the number of active players playing the game
 function countActivePlayers() {
 	let result = 0;
 	for(let p in PLAYER_LIST) {
