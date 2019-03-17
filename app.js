@@ -3,7 +3,7 @@ var app = express();
 var serv = require('http').Server(app);
 var colors = require('colors/safe');
 var middleware = require('socketio-wildcard')();
-
+var exports = module.exports={countActivePlayers: countActivePlayers};
 var debug = typeof v8debug === 'object' || /--debug/.test(process.execArgv.join(' '));
 
 console.log(colors.green("[jsShooter] Starting server..."));
@@ -148,7 +148,7 @@ var NPCAttacker = function(id, x, y) {
  						self.x += Math.cos(dir/180*Math.PI) * 2;
  						self.y += Math.sin(dir/180*Math.PI) * 2;
  					}
- 					
+
   				}
 			} catch(err) {
 				if(debug) {
@@ -256,7 +256,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 						owner.score += 10;
 						if(at.hp <= 0) {
 							owner.score += 50;
-						} 
+						}
 					}
 					self.lifetime = 0;
 				}
@@ -274,7 +274,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 						if(sh.hp <= 0) {
 							owner.score += 50;
 						}
-					} 
+					}
 					self.lifetime = 0;
 				}
 			}
@@ -474,13 +474,13 @@ function getSmallest(obj) {
 		}
 		if(obj[k]<min)
 		{
-			min=obj[k]; 
+			min=obj[k];
 			key=k;
 		}
 	}
-	return key;
+	return min;
+	//should be return min
 }
-
 function countActivePlayers() {
 	let result = 0;
 	for(let p in PLAYER_LIST) {
@@ -605,7 +605,7 @@ io.sockets.on("connection", function(socket) {
 	socket.emit("id", {
 		id:socket.id
 	});
-	
+
 	socket.on("disconnect", function() {
 		try {
 			for(let b in BULLET_LIST) {
@@ -765,7 +765,7 @@ io.sockets.on("connection", function(socket) {
 				throw err;
 			}
 		}
-	});	
+	});
 
 	// Dual bullet upgrade
 	socket.on('upgDualBullets', function() {
@@ -929,7 +929,7 @@ setInterval(function() {
 				}
 			}, 500);
 		}
-		
+
 		// AFK Test loop
 		for(let i in SOCKET_LIST) {
 			let socket = SOCKET_LIST[i];

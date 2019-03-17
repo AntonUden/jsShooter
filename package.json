@@ -4,7 +4,7 @@
   "description": "Nodejs and html5 game",
   "main": "app.js",
   "scripts": {
-    "test": "node --debug --use_strict app.js",
+    "test": "jasmine --config=spec/support/jasmine.json",
     "start": "node app.js"
   },
   "repository": {
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/Zeeraa/jsShooter/issues"
   },
-  "homepage": "https://github.com/Zeeraa/jsShooter#readme"
+  "homepage": "https://github.com/Zeeraa/jsShooter#readme",
+  "devDependencies": {
+    "jasmine": "^3.3.1"
+  }
 }
