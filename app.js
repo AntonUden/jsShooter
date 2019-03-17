@@ -1,4 +1,3 @@
-//hi
 var express = require('express');
 var app = express();
 var serv = require('http').Server(app);
@@ -37,6 +36,8 @@ var BLOCK_LIST = {};
 var ATTACKER_LIST = {};
 var NPCSHOOTER_LIST = {};
 var POWERUP_LIST = {};
+
+const loseVal = 20; //set max value of points where if you lose the game you will die to 20
 
 // ---------- Entities ----------
 // Npc shooter object
@@ -884,7 +885,9 @@ setInterval(function() {
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
 			if(!(player.spawnCooldown < 0)) {
-				player.spawnCooldown--;
+				if(player.score>loseVal){
+					player.spawnCooldown--;
+				}
 			}
 			if(player.powerupTime > 0) {
 				player.powerupTime--;

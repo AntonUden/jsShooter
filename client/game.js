@@ -36,10 +36,12 @@ var lmx = -1;
 var lmy = -1;
 
 var upgHP = 500;
+const loseVal = 20;//set max value of points where you will lose the game if you die to 20
 
 var uiVisible = false;
 var shooter_blink_state = true;
 var dead = false;
+var lost = false;
 var respawnCooldown = 0;
 var colorBlink = 0;
 
@@ -232,6 +234,11 @@ socket.on("newPositions", function(data) {
 			}
 			if (data.players[i].spawnCooldown > -1) {
 				dead = true;
+				if(data.players[i].score<=loseVal){
+					lost=true;//if the player doesn't have more than the losing value of points, set lost to true
+				}else{
+					lost=false;//set to false otherwise because this is a loop that goes through all players
+				}
 				respawnCooldown = data.players[i].spawnCooldown;
 			} else {
 				dead = false;
@@ -329,10 +336,15 @@ socket.on("newPositions", function(data) {
 	}
 
 	if (dead) {
-		$("#death").show();
-		countdownDiv.innerHTML = "Respawn in " + respawnCooldown;
+		if(lost){
+			$("#loseGame").show();//if the players score is low enough that they lost, show the lost screen
+		}else{
+			$("#death").show();
+			countdownDiv.innerHTML = "Respawn in " + respawnCooldown;//otherwise, show normal death screen and respawn countdown
+		}
 	} else {
 		$("#death").hide();
+		$("#loseGame").hide();//if the player did not die, keep death screens hidden
 	}
 });
 
