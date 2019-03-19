@@ -37,6 +37,8 @@ var ATTACKER_LIST = {};
 var NPCSHOOTER_LIST = {};
 var POWERUP_LIST = {};
 
+const loseVal = 20; //set max value of points where if you lose the game you will die to 20
+
 // ---------- Entities ----------
 // Npc shooter object
 var NPCShooter = function(id, x, y) {
@@ -418,7 +420,10 @@ var Player = function(id) {
 	return self;
 }
 
+
 //Powerup object
+//Description: This object takes three parameters to make an object that deals with the powerups of each player
+//Parameters: x is the x coordinate, y is the y coordinate, id designates which player
 var PowerUp = function(x, y, id) {
 	var self = {
 		x:x,
@@ -426,6 +431,7 @@ var PowerUp = function(x, y, id) {
 		id:id
 	};
 
+//the update function updates the player's power up time and score if they have died
 	self.update = function() {
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
@@ -437,6 +443,7 @@ var PowerUp = function(x, y, id) {
 		}
 	}
 
+//this function finds the player by the id and deletes them when they die
 	self.destroy = function() {
 		delete POWERUP_LIST[self.id];
 		delete self;
@@ -446,6 +453,12 @@ var PowerUp = function(x, y, id) {
 }
 
 // ---------- Functions ----------
+
+//Function name: getPlayerByID
+//Parameters: id - the id of the player
+//Description: this function returns the player from the list of players based
+//on the unique player id.
+//Return: player the player that we found by id
 function getPlayerByID(id) {
 	for(let p in PLAYER_LIST) {
 		let player = PLAYER_LIST[p];
@@ -455,6 +468,10 @@ function getPlayerByID(id) {
 	}
 }
 
+//Function name: getDistance
+//Parameters: x1 & x2 - the x coordinates for distance, y1 & y2 - the y coordinates for distance
+//Description: finds the distance between two points
+//Return: the distance from the two points
 function getDistance(x1, y1, x2, y2) {
 	let a = x1 - x2;
 	let b = y1 - y2;
@@ -462,6 +479,10 @@ function getDistance(x1, y1, x2, y2) {
 	return Math.sqrt( a*a + b*b );
 }
 
+//Function name: getSmallest
+//Parameters: obj - a list of obj that are the distances, so we can compare them
+//Description: find the min distances from our list of distances and return the one with the smallest distance
+//Return: the id of the obj with mininmum distance
 function getSmallest(obj) {
 	let min,key;
 	for(let k in obj)
@@ -481,6 +502,12 @@ function getSmallest(obj) {
 	return min;
 	//should be return min
 }
+
+//Name: countActivePlayers
+//Description: Go through the list of players and find out which players are still players
+//if the player is has died, they should not be included in this list
+//Return: the number of active players playing the game
+
 function countActivePlayers() {
 	let result = 0;
 	for(let p in PLAYER_LIST) {
@@ -492,34 +519,41 @@ function countActivePlayers() {
 	return result;
 }
 
+//Name: isOverPower
+//Parameters: player - a player in the game
+//Description: set the correct power for the player and return if they are over power
+//Return: if a player is over power
 function isOverPower(player) {
 	let power = 0;
-	if(!(player.joinKickTimeout < 0 && player.spawnCooldown < 0)) {
+	if(!(player.joinKickTimeout < 0 && player.spawnCooldown < 0)) {  //if they player is dead
 		power = -9000;
 	}
-	if(player.doubleFireSpeed) {
+	if(player.doubleFireSpeed) { //if the player has the powerup doubleFireSpeed
 		power++;
 	}
-	if(player.quadrupleFireSpeed) {
+	if(player.quadrupleFireSpeed) { //if the player has the powerup quadrupleFireSpeed
 		power++;
 	}
-	if(player.doubleBulletSize) {
+	if(player.doubleBulletSize) { //if the player has the powerup doubleBulletSize
 		power++;
 	}
-	if(player.dualBullets) {
+	if(player.dualBullets) {  //if the player has the powerup dualBullets
 		power++;
 	}
-	if(player.quadrupleBullets) {
+	if(player.quadrupleBullets) { //if the player has the powerup quadrupleBullets
 		power++;
 	}
 
-	if(power > 3) {
+	if(power > 3) {  //if they has over three powerups they are over power
 		return true;
 	} else {
 		return false;
 	}
 }
 
+//Name: countOPPlayers
+//Description: count the players who are overpower
+//Return: the number of players who are overpower
 function countOPPlayers() {
 	let result = 0;
 	for(let p in PLAYER_LIST) {
@@ -531,34 +565,50 @@ function countOPPlayers() {
 	return result;
 }
 
+//Name: spawnBlock
+//Description: Create a new block object, assign it a random id and random position to start life
+//Return: id of block that was created
 function spawnBlock() {
 	let id = (Math.random() * 10);
-	BLOCK_LIST[id] = NPCBlock(id);
+	BLOCK_LIST[id] = NPCBlock(id);   //randomly assign new position
 	return id;
 }
 
+//Name: spawnAttacker
+//Description: Create an object that will attack the players and assign it a random position and id
+//Return id of new attacker that was created
 function spawnAttacker() {
-	let id = (Math.random() * 10);
-	let x = Math.floor(Math.random() * 1180) + 10;
-	let y = Math.floor(Math.random() * 580) + 10;
-	ATTACKER_LIST[id] = NPCAttacker(id, x, y);
+	let id = (Math.random() * 10);   //assign random id
+	let x = Math.floor(Math.random() * 1180) + 10;   //assign random position
+	let y = Math.floor(Math.random() * 580) + 10;   //assign random position
+	ATTACKER_LIST[id] = NPCAttacker(id, x, y);   //add it to the list
 	return id;
 }
 
+//Name: spawnShooter
+//Description: Create an shooter object with random id and position
+//Return: id of new shooter that was created
 function spawnShooter() {
-	let id = (Math.random() * 10);
-	let x = Math.floor(Math.random() * 1180) + 10;
-	let y = Math.floor(Math.random() * 580) + 10;
-	NPCSHOOTER_LIST[id] = NPCShooter(id, x, y);
+	let id = (Math.random() * 10);  //assign random id
+	let x = Math.floor(Math.random() * 1180) + 10; //assign random position
+	let y = Math.floor(Math.random() * 580) + 10;  //assign random position
+	NPCSHOOTER_LIST[id] = NPCShooter(id, x, y);   //add it to the list
 	return id;
 }
 
+//Name: disconnectSocket
+//Parameters: id - the id of the connection
+//Description: disconnects from the socket connection
 function disconnectSocket(id) {
 	SOCKET_LIST[id].disconnect();
 	delete SOCKET_LIST[id];
 	delete SOCKET_ACTIVITY[id];
 }
 
+//Name: getCommand
+//Parameters: text - the word that is being modified so it can be used for checking what to do
+//Description: parse text to the correct format
+//return: the modified text in the correct format
 function getCommand(text) {
 	let command = "";
 	for(let i = 0; i < text.length; i++) {
@@ -571,6 +621,10 @@ function getCommand(text) {
 	return command.toLowerCase();
 }
 
+//Name: getArgs
+//Parameters: text - the words that need to be parsed to get the args
+//Description: parse text to find the arguments given
+//Return: the arguments in the correct format for checking later
 function getArgs(text) {
 	let args = [];
 	let arg = "";
@@ -594,6 +648,7 @@ function getArgs(text) {
 // ---------- Socket Connections ----------
 
 io.sockets.on("connection", function(socket) {
+	//connect the id with a socket
 	socket.id = Math.random();
 	if(SOCKET_ACTIVITY[socket.id] == undefined) {
 		SOCKET_ACTIVITY[socket.id] = 0;
@@ -605,6 +660,8 @@ io.sockets.on("connection", function(socket) {
 	socket.emit("id", {
 		id:socket.id
 	});
+
+	//disconect the player with the socket
 
 	socket.on("disconnect", function() {
 		try {
@@ -624,6 +681,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//move the player based on which arrow key the user pressed
 	socket.on('keyPress',function(data){
 		try {
 			if(data.inputId === 'left')
@@ -641,6 +699,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//change the player name based on the input provided
 	socket.on('changeName', function(data) {
 		try {
 			if(data.name.length > 64) { // Name is way too long. Kick the player for sending too much data
@@ -655,7 +714,7 @@ io.sockets.on("connection", function(socket) {
 				return;
 			}
 
-			let player = getPlayerByID(socket.id);
+			let player = getPlayerByID(socket.id);   //find player who wants to change the name
 			if(player.name != data.name ) {
 				console.log(colors.cyan("[jsShooter] Player with id " + socket.id + " changed name to " + data.name));
 				player.name = data.name;
@@ -667,6 +726,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//find if we need to kick out player because of afk
 	socket.on('not afk', function(data) {
 		try {
 			let player = getPlayerByID(socket.id);
@@ -678,6 +738,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//verify player based on id in game
 	socket.on('kthx',function(data){
 		try {
 			let player = getPlayerByID(socket.id);
@@ -692,6 +753,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//add a connection to the list of socket connections there are
 	socket.on("*", function(data) {
 		try {
 			SOCKET_ACTIVITY[socket.id]++;
@@ -704,6 +766,8 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	// HP Upgrade
+	//verify that connection is still good when they want to upgrade their hp and make sure
+	//that all the correct information was updated
 	socket.on('upgHPClicked',function(data){
 		try {
 			let player = getPlayerByID(socket.id);
@@ -725,6 +789,8 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	// Fire speed upgrade
+	//verify that connection is still good when they want to upgrade their fire speed and make sure
+	//that all the correct information was updated
 	socket.on('upgFSpeedClicked',function(data){
 		try {
 			let player = getPlayerByID(socket.id);
@@ -749,6 +815,8 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	// Bullet size upgrade
+	//verify that connection is still good when they want to upgrade their bullet size and make sure
+	//that all the correct information was updated
 	socket.on('upgBulletSize',function(data){
 		try {
 			let player = getPlayerByID(socket.id);
@@ -768,6 +836,8 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	// Dual bullet upgrade
+	//verify that connection is still good when they want to upgrade to dual bullets and make sure
+	//that all the correct information was updated
 	socket.on('upgDualBullets', function() {
 		try {
 			let player = getPlayerByID(socket.id);
@@ -791,6 +861,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 
+	//this updates the movement of the player based on mouse movement by the user
 	socket.on('mouseMove',function(data){
 		try {
 			let player = getPlayerByID(socket.id);
@@ -805,7 +876,7 @@ io.sockets.on("connection", function(socket) {
 		}
 	});
 });
-
+//******************************************************************
 // ---------- Loops ----------
 // Bullet fire loop
 setInterval(function() {
@@ -883,7 +954,9 @@ setInterval(function() {
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
 			if(!(player.spawnCooldown < 0)) {
-				player.spawnCooldown--;
+				if(player.score>loseVal){
+					player.spawnCooldown--;
+				}
 			}
 			if(player.powerupTime > 0) {
 				player.powerupTime--;
