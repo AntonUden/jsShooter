@@ -55,7 +55,7 @@ var NPCShooter = function(id, x, y) {
 
 	self.fireBullet = function() {
 		try {
-			let bID = Math.random() * 200;
+			let bID = Math.random() * 2000;
 			let target = PLAYER_LIST[self.targetPlayer];
 			BULLET_LIST[bID] = Bullet(bID, -1, self.x, self.y, Math.atan2(target.y - self.y, target.x - self.x) * 180 / Math.PI, 1);
 		} catch(err) {
@@ -239,7 +239,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 					delete BLOCK_LIST[block.id];
 					let owner = getPlayerByID(self.owner);
 					if(!(owner == undefined)) {
-						owner.score += 25;
+						owner.score += 50;
 					}
 					self.lifetime = 0;
 				}
@@ -255,7 +255,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 					if(!(owner == undefined)) {
 						owner.score += 10;
 						if(at.hp <= 0) {
-							owner.score += 50;
+							owner.score += 100;
 						} 
 					}
 					self.lifetime = 0;
@@ -272,7 +272,7 @@ var Bullet = function(id, ownerID, x, y, angle, size) {
 					if(!(owner == undefined)) {
 						owner.score += 10;
 						if(sh.hp <= 0) {
-							owner.score += 50;
+							owner.score += 250;
 						}
 					} 
 					self.lifetime = 0;
@@ -345,11 +345,25 @@ var Player = function(id) {
 		self.powerupTime = -1;
 		self.score = Math.round(self.score / 3);
 
-		if(self.doubleFireSpeed) self.score += 400;
-		if(self.quadrupleFireSpeed) self.score += 1600;
-		if(self.doubleBulletSize) self.score += 1600;
-		if(self.dualBullets) self.score += 1000;
-		if(self.quadrupleBullets) self.score += 1600;
+		if(self.doubleFireSpeed) {
+			self.score += 400;
+		}
+
+		if(self.quadrupleFireSpeed) {
+			self.score += 1600;
+		}
+
+		if(self.doubleBulletSize) {
+			self.score += 1600;
+		}
+
+		if(self.dualBullets) {
+			self.score += 1000;
+		}
+
+		if(self.quadrupleBullets) {
+			self.score += 1600;
+		}
 
 		self.maxHp = 10;
 		self.regen = -1;
@@ -365,17 +379,16 @@ var Player = function(id) {
 
 	self.fireBullet = function() {
 		if(self.joinKickTimeout < 0 && self.spawnCooldown < 0) {
-			let bsize = 1;
-			if(self.doubleBulletSize) bsize = 1.5;
-			let id = Math.random() * 200;
+			let bsize = (self.doubleBulletSize ? 1.5 : 1);
+			let id = Math.random() * 2000;
 			BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI, bsize);
 			if(self.dualBullets) {
-				id = Math.random() * 200;
+				id = Math.random() * 2000;
 				BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-180, bsize);
 				if(self.quadrupleBullets) {
-					id = Math.random() * 200;
+					id = Math.random() * 2000;
 					BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-90, bsize);
-					id = Math.random() * 200;
+					id = Math.random() * 2000;
 					BULLET_LIST[id] = Bullet(id, self.id, self.x, self.y, (Math.atan2(self.my - self.y, self.mx - self.x) * 180 / Math.PI)-270, bsize);
 				}
 			}
@@ -431,7 +444,7 @@ var PowerUp = function(x, y, id) {
 			let player = PLAYER_LIST[p];
 			if(getDistance(self.x, self.y, player.x, player.y) < 16) {
 				player.powerupTime += 10;
-				player.score += 500;
+				player.score += 750;
 				self.destroy();
 			}
 		}
@@ -493,10 +506,10 @@ function countActivePlayers() {
 }
 
 function isOverPower(player) {
-	let power = 0;
 	if(!(player.joinKickTimeout < 0 && player.spawnCooldown < 0)) {
-		power = -9000;
+		return false;
 	}
+	let power = 0;
 	if(player.doubleFireSpeed) {
 		power++;
 	}
@@ -626,14 +639,15 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on('keyPress',function(data){
 		try {
-			if(data.inputId === 'left')
+			if(data.inputId === 'left') {
 				player.pressingLeft = data.state;
-			else if(data.inputId === 'right')
+			} else if(data.inputId === 'right') {
 				player.pressingRight = data.state;
-			else if(data.inputId === 'up')
+			} else if(data.inputId === 'up') {
 				player.pressingUp = data.state;
-			else if(data.inputId === 'down')
+			} else if(data.inputId === 'down') {
 				player.pressingDown = data.state;
+			}
 		} catch(err) {
 			if(debug) {
 				throw err;
@@ -648,8 +662,6 @@ io.sockets.on("connection", function(socket) {
 				disconnectSocket(socket.id);
 				return;
 			}
-
-			//data.name = data.name.replace(/[\u{0080}-\u{FFFF}]/gu,"");
 
 			if(data.name.length > 16 || data.name.length < 1) { // Name is too long or too short
 				return;
@@ -893,11 +905,7 @@ setInterval(function() {
 		}
 
 		// Spawn and despawn shooters
-		let r = 20;
-		if(countOPPlayers() > 0) {
-			r = 4;
-		}
-		if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * r) == 1) {
+		if(Object.keys(NPCSHOOTER_LIST).length < 5 && Math.floor(Math.random() * (countOPPlayers() > 0 ? 4 : 20)) == 1) {
 			if(countActivePlayers() > 0) {
 				spawnShooter();
 			}
@@ -992,7 +1000,8 @@ setInterval(function() {
 }, 100);
 
 // Main update loop
-setInterval(function() {
+var updatePriceCooldown = 0;
+async function update() {
 	try {
 		let playerPack = [];
 		let bulletPack = [];
@@ -1000,6 +1009,9 @@ setInterval(function() {
 		let shooterPack = [];
 		let attackerPack = [];
 		let powerupPack = [];
+		if(updatePriceCooldown > 0) {
+			updatePriceCooldown--;
+		}
 		for(let p in PLAYER_LIST) {
 			let player = PLAYER_LIST[p];
 			player.update();
@@ -1017,17 +1029,22 @@ setInterval(function() {
 					powerupTime:player.powerupTime,
 					spawnCooldown:player.spawnCooldown
 				});
-				let socket = SOCKET_LIST[p];
-				socket.emit("price", {
-					upgHP:player.upgHPPrice,
-					score:player.score,
-					doubleBulletSize:player.doubleBulletSize,
-					doubleFireSpeed:player.doubleFireSpeed,
-					quadrupleFireSpeed:player.quadrupleFireSpeed,
-					quadrupleBullets:player.quadrupleBullets,
-					dualBullets:player.dualBullets
-				});
+				if(updatePriceCooldown <= 0) {
+					let socket = SOCKET_LIST[p];
+					socket.emit("price", {
+						upgHP:player.upgHPPrice,
+						score:player.score,
+						doubleBulletSize:player.doubleBulletSize,
+						doubleFireSpeed:player.doubleFireSpeed,
+						quadrupleFireSpeed:player.quadrupleFireSpeed,
+						quadrupleBullets:player.quadrupleBullets,
+						dualBullets:player.dualBullets
+					});
+				}
 			}
+		}
+		if(updatePriceCooldown <= 0) {
+			updatePriceCooldown = (fps / 4);
 		}
 
 		for(let b in BULLET_LIST) {
@@ -1091,12 +1108,16 @@ setInterval(function() {
 			});
 		}
 	} catch(err) {
-		console.log(colors.red("[jsShooter] (Warning) Crash during main update loop. " + err));
+		console.log(colors.red("[jsShooter] (Warning) Exception thrown during main update loop. " + err));
 		if(debug) {
 			throw err;
 		}
 	}
-},(1000 / fps));
+}
+
+setInterval(function() {
+	update();
+}, (1000 / fps));
 
 // ---------- Commands ----------
 process.stdin.resume();
