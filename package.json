@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Zeeraa/jsShooter.git"
+    "url": "git+https://github.com/AntonUden/jsShooter.git"
   },
   "dependencies": {
     "colors": "1.3.2",
@@ -19,10 +19,10 @@
     "ws": "6.0.0"
   },
   "keywords": [],
-  "author": "Zeeraa",
+  "author": "AntonUden",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Zeeraa/jsShooter/issues"
+    "url": "https://github.com/AntonUden/jsShooter/issues"
   },
-  "homepage": "https://github.com/Zeeraa/jsShooter#readme"
+  "homepage": "https://github.com/AntonUden/jsShooter#readme"
 }
