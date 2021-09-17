@@ -1,51 +1,56 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta name="description" content="Open source nodejs and HTML5 game">
-		<meta name="keywords" content="HTML,HTML5,game,JavaScript,free,opensource,open source,github,nodejs,multiplayer,download">
-		<meta name="author" content="Zeeraa">
-		<link rel="icon" href="/client/icon.png">
-		<title>JS Shooter</title>
-		<link rel="stylesheet" type="text/css" href="/client/style.css">
-	</head>
-	<body onmousemove="mouseMove(event);">
-		<canvas id="ctx" width="1200" height="600"></canvas>
 
-		<div id="overlay"></div>
+<head>
+	<meta name="description" content="Open source nodejs and HTML5 game">
+	<meta name="keywords"
+		content="HTML,HTML5,game,JavaScript,free,opensource,open source,github,nodejs,multiplayer,download">
+	<meta name="author" content="Zeeraa">
+	<link rel="icon" href="/client/icon.png">
+	<title>JS Shooter</title>
+	<link rel="stylesheet" type="text/css" href="/client/style.css">
+</head>
 
-		<div id="scoreDiv" class="noselect">undefined</div>
-		<div id="death" class="noselect">
-			<div id="dead" class="noselect">
-				You are dead
-			</div>
-			<br>
-			<div id="countdown" class="noselect">0</div>
-		</div>
-		<div id="powerupCountdown" class="noselect">
-			Powerup time left: 
-			<div id="powerupCountdownTimer">
-				0
-			</div>
-		</div>
+<body onmousemove="mouseMove(event);">
+	<canvas id="ctx" width="1200" height="600"></canvas>
 
-		<div id=menuTextDiv>
-			Menu
-		</div>
-		<div id="uiDiv" class="noselect">
-			<button class="shadow" disabled="true" id="upgradefs">Double fire speed (2000)</button>
-			<button class="shadow" disabled="true" id="upgradedb">Dual bullets (5000)</button>
-			<button class="shadow" disabled="true" id="upgradehp">Upgrade HP (500)</button>
-			<button class="shadow" disabled="true" id="upgradeBulletSize">Upgrade bullet size (5000)</button>
-			<input type="checkbox" id="mlock">Lock menu
-			<br>
-			<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required onkeydown = "nameInputKeydown(event)">
-			<button class="shadow" id="setName">Set name</button>
-			<a href="https://github.com/AntonUden/jsShooter" target="_blank">Source code</a>
-		</div>
+	<div id="overlay"></div>
 
-		<script src="/client/jquery-3.3.1.min.js"></script>
-		<script src="/client/socket.io.js"></script>
-		<script src="/client/cookies.js"></script>
-		<script src="/client/game.js"></script>
-	</body>
+	<div id="scoreDiv" class="noselect">undefined</div>
+	<div id="death" class="noselect">
+		<div id="dead" class="noselect">
+			You are dead
+		</div>
+		<br>
+		<div id="countdown" class="noselect">0</div>
+	</div>
+	<div id="powerupCountdown" class="noselect">
+		Powerup time left:
+		<div id="powerupCountdownTimer">
+			0
+		</div>
+	</div>
+
+	<div id=menuTextDiv>
+		Menu
+	</div>
+	<div id="uiDiv" class="noselect">
+		<button class="shadow" disabled="true" id="upgradefs">Double fire speed (2000)</button>
+		<button class="shadow" disabled="true" id="upgradedb">Dual bullets (5000)</button>
+		<button class="shadow" disabled="true" id="upgradehp">Upgrade HP (500)</button>
+		<button class="shadow" disabled="true" id="upgradeBulletSize">Upgrade bullet size (5000)</button>
+		<input type="checkbox" id="mlock">Lock menu
+		<br>
+		<input id="nameInput" value="Unnamed" maxlength="16" pattern="[A-Za-z0-9]" required
+			onkeydown="nameInputKeydown(event)">
+		<button class="shadow" id="setName">Set name</button>
+		<a href="https://github.com/AntonUden/jsShooter" target="_blank">Source code</a>
+	</div>
+
+	<script src="/client/jquery-3.3.1.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/client/cookies.js"></script>
+	<script src="/client/game.js"></script>
+</body>
+
 </html>

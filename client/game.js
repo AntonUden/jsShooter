@@ -23,7 +23,7 @@ ctx.font = "30px Arial";
 ctx.fillText("Try reloading the page.", 600, 330);
 
 ctx.font = "10px Arial";
-setTimeout(function() {
+setTimeout(function () {
 	uiDiv.style.height = "0px";
 	$("#menuTextDiv").height("20px");
 }, 500);
@@ -43,10 +43,10 @@ var dead = false;
 var respawnCooldown = 0;
 var colorBlink = 0;
 
-socket.on("id", function(data) {
+socket.on("id", function (data) {
 	console.log("Your id is " + data.id);
 	id = data.id;
-	setTimeout(function() {
+	setTimeout(function () {
 		socket.emit("kthx");
 	}, 100);
 });
@@ -57,10 +57,10 @@ function nameInputKeydown(event) {
 	}
 }
 
-$("#upgradehp").click(function() {
+$("#upgradehp").click(function () {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		setTimeout(function() {
+		setTimeout(function () {
 			socket.emit("upgHPClicked");
 		}, 100);
 	}
@@ -82,32 +82,32 @@ function changeName() {
 	}
 }
 
-$("#setName").click(function() {
+$("#setName").click(function () {
 	changeName();
 });
 
-$("#upgradedb").click(function() {
+$("#upgradedb").click(function () {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		setTimeout(function() {
+		setTimeout(function () {
 			socket.emit("upgDualBullets");
 		}, 100);
 	}
 });
 
-$("#upgradeBulletSize").click(function() {
+$("#upgradeBulletSize").click(function () {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		setTimeout(function() {
+		setTimeout(function () {
 			socket.emit("upgBulletSize");
 		}, 100);
 	}
 });
 
-$("#upgradefs").click(function() {
+$("#upgradefs").click(function () {
 	if (clickCooldown < 1) {
 		clickCooldown = 1;
-		setTimeout(function() {
+		setTimeout(function () {
 			socket.emit("upgFSpeedClicked");
 		}, 100);
 	}
@@ -135,11 +135,11 @@ function unfocus() {
 	document.body.removeChild(tmp);
 }
 
-socket.on("afk?", function(data) {
+socket.on("afk?", function (data) {
 	socket.emit("not afk");
 });
 
-socket.on("price", function(data) {
+socket.on("price", function (data) {
 	upgHP = data.upgHP;
 	$("#upgradehp").html("Upgrade HP (" + upgHP + ")");
 	if (data.score >= upgHP && !dead) {
@@ -205,7 +205,7 @@ socket.on("price", function(data) {
 	}
 });
 
-socket.on("newPositions", function(data) {
+socket.on("newPositions", function (data) {
 	ctx.clearRect(0, 0, 1200, 600);
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(0, 0, 1200, 600);
@@ -221,13 +221,13 @@ socket.on("newPositions", function(data) {
 		ctx.fillRect(0, bgLineY, 1200, 1);
 	}
 
-	for(let i = 0; i < data.players.length; i++) {
+	for (let i = 0; i < data.players.length; i++) {
 		// Get player stats
-		if(data.players[i].id == id) {
+		if (data.players[i].id == id) {
 			let status = "HP: " + data.players[i].hp + "/" + data.players[i].maxHp + " Score: " + data.players[i].score;
 			scoreDiv.innerHTML = status;
 			$("#powerupCountdownTimer").html(data.players[i].powerupTime);
-			if(data.players[i].powerupTime < 0) {
+			if (data.players[i].powerupTime < 0) {
 				$("#powerupCountdown").hide();
 			}
 			if (data.players[i].spawnCooldown > -1) {
@@ -238,13 +238,13 @@ socket.on("newPositions", function(data) {
 			}
 		}
 
-		if(data.players[i].spawnCooldown < 0) {
+		if (data.players[i].spawnCooldown < 0) {
 			let playerAlpha = 1;
 			let playerTextColor;
 
-			if(data.players[i].powerupTime > 0) {
+			if (data.players[i].powerupTime > 0) {
 				playerAlpha = 1 - colorBlink;
-				
+
 				ctx.strokeStyle = "rgba(0, 0, 255, " + playerAlpha + ")";
 				ctx.beginPath();
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.sin(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
@@ -254,12 +254,12 @@ socket.on("newPositions", function(data) {
 				ctx.arc(data.players[i].x, data.players[i].y, 10 + (Math.cos(new Date().getTime() / 500) * 5), 0, 2 * Math.PI);
 				ctx.stroke();
 
-				if(data.players[i].id == id) {
+				if (data.players[i].id == id) {
 					$("#powerupCountdown").show();
 				}
 			}
 
-			if(data.players[i].id == id) {
+			if (data.players[i].id == id) {
 				playerTextColor = "rgba(0, 160, 0, " + playerAlpha + ")";
 			} else {
 				playerTextColor = "rgba(255, 0, 0, " + playerAlpha + ")";
@@ -337,7 +337,7 @@ socket.on("newPositions", function(data) {
 });
 
 // Spam protection
-setInterval(function() {
+setInterval(function () {
 	if (clickCooldown > 0) {
 		clickCooldown--;
 	} else {
@@ -346,8 +346,8 @@ setInterval(function() {
 }, 50);
 
 // Sends mouse position to the server 20 times per second
-setInterval(function() {
-	if(!(lmx == mx && lmy == my)) {
+setInterval(function () {
+	if (!(lmx == mx && lmy == my)) {
 		let pack = {
 			x: mx,
 			y: my
@@ -358,17 +358,17 @@ setInterval(function() {
 	}
 }, 50);
 
-setInterval(function() {
+setInterval(function () {
 	shooter_blink_state = !shooter_blink_state;
 }, 500);
 
-setInterval(function() {
+setInterval(function () {
 	colorBlink = Math.abs(Math.sin(new Date().getTime() / 700) * 1);
 }, 50);
 
 var keyRightDown, keyLeftDown, keyUpDown, keyDownDown = false;
 
-document.onkeydown = function(event) {
+document.onkeydown = function (event) {
 	if ((event.keyCode === 68 || event.keyCode === 39) && !keyRightDown) { //d
 		keyRightDown = true;
 		socket.emit('keyPress', {
@@ -396,7 +396,7 @@ document.onkeydown = function(event) {
 	}
 }
 
-document.onkeyup = function(event) {
+document.onkeyup = function (event) {
 	if (event.keyCode === 68 || event.keyCode === 39) { //d
 		keyRightDown = false;
 		socket.emit('keyPress', {
@@ -424,12 +424,12 @@ document.onkeyup = function(event) {
 	}
 }
 
-window.onblur = function() {
+window.onblur = function () {
 	keyRightDown = false;
-	keyLeftDown = false; 
+	keyLeftDown = false;
 	keyUpDown = false;
 	keyDownDown = false;
-	
+
 	socket.emit('keyPress', {
 		inputId: 'right',
 		state: false
@@ -449,8 +449,8 @@ window.onblur = function() {
 };
 
 try {
-	if(getCookie("jsshooter_name") != "") {
-		if(getCookie("jsshooter_name").length > 18) {
+	if (getCookie("jsshooter_name") != "") {
+		if (getCookie("jsshooter_name").length > 18) {
 			console.error("[Warning] Name stored in cookie is too long. resetting to Unnamed");
 			setCookie("jsshooter_name", "Unnamed", 360);
 		}
@@ -459,4 +459,4 @@ try {
 	} else {
 		setCookie("jsshooter_name", "Unnamed", 360);
 	}
-} catch(err) {}
+} catch (err) { }

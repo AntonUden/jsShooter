@@ -1,0 +1,9 @@
+package-lock.json
+.github
+.gitignore
+CODE_OF_CONDUCT.md
+.dockerignore
+README.md
+*.bat
+*.sh
+LICENSE
